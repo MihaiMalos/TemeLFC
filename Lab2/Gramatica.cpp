@@ -1,4 +1,4 @@
-#include "Gramatica.h"
+﻿#include "Gramatica.h"
 #include <iostream>
 
 std::istream& operator>>(std::istream& in, Gramatica& gramatica)
@@ -69,13 +69,18 @@ std::ostream& operator<<(std::ostream& out, const Gramatica& gramatica)
 bool Gramatica::verificare()
 {
 	for (auto terminal : m_terminale)
-		for (auto neterminal : m_neterminale)
-			if (terminal == neterminal)
+			if (m_neterminale.find(terminal)!=m_neterminale.end())
 				return false;
 
 	if (m_neterminale.find(m_simbolStart) == m_neterminale.end())
 		return false;
 
+	std::string simbol(1, m_simbolStart);
+	for (auto productie : m_productii)
+	{
+		/*if (productie.first == simbol)*/
+			
+	}
 
 	return true;
 }
