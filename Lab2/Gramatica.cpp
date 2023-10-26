@@ -66,3 +66,12 @@ std::ostream& operator<<(std::ostream& out, const Gramatica& gramatica)
 }
 
 
+bool Gramatica::verificare()
+{
+
+}
+
+void Gramatica::generare()
+{
+
+}
