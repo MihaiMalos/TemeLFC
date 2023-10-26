@@ -68,7 +68,16 @@ std::ostream& operator<<(std::ostream& out, const Gramatica& gramatica)
 
 bool Gramatica::verificare()
 {
+	for (auto terminal : m_terminale)
+		for (auto neterminal : m_neterminale)
+			if (terminal == neterminal)
+				return false;
 
+	if (m_neterminale.find(m_simbolStart) == m_neterminale.end())
+		return false;
+
+
+	return true;
 }
 
 void Gramatica::generare()
