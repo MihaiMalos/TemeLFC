@@ -32,7 +32,6 @@ std::istream& operator>>(std::istream& in, Gramatica& gramatica)
 
 	return in;
 }
-
 std::ostream& operator<<(std::ostream& out, const Gramatica& gramatica)
 {
 	out << "G = ({";
@@ -65,23 +64,45 @@ std::ostream& operator<<(std::ostream& out, const Gramatica& gramatica)
 	return out;
 }
 
+bool Gramatica::VerificareCond1()
+{
+	for (auto terminal : m_terminale)
+		if (m_neterminale.find(terminal) != m_neterminale.end())
+			return false;
+	return true;
+}
+bool Gramatica::VerificareCond2()
+{
+	return m_neterminale.find(m_simbolStart) == m_neterminale.end();
+}
+bool Gramatica::VerificareCond3()
+{
+	std::regex myPattern(R"([a-z]*[A-Z]+[a-z]*)");
+	for (auto productie : m_productii)
+		if (!std::regex_match(productie.first, myPattern))
+			return false;
+	return true;
+}
+bool Gramatica::VerificareCond4()
+{
+	std::string simbol(1, m_simbolStart);
+	for (auto productie : m_productii)
+		if (productie.first == simbol)
+			return true;
+	return false;
+}
+bool Gramatica::VerificareCond5()
+{
+	return false;
+}
 
 bool Gramatica::verificare()
 {
-	for (auto terminal : m_terminale)
-			if (m_neterminale.find(terminal)!=m_neterminale.end())
-				return false;
-
-	if (m_neterminale.find(m_simbolStart) == m_neterminale.end())
-		return false;
-
-	std::string simbol(1, m_simbolStart);
-	for (auto productie : m_productii)
-	{
-		/*if (productie.first == simbol)*/
-			
-	}
-
+	if (!VerificareCond1() ||
+		!VerificareCond2() ||
+		!VerificareCond3() ||
+		!VerificareCond4())
+		return false;	
 	return true;
 }
 
