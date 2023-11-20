@@ -1,5 +1,7 @@
-﻿#include "Gramatica.h"
-#include <iostream>
+﻿#include <iostream>
+#include <random>
+
+#include "Gramatica.h"
 
 std::istream& operator>>(std::istream& in, Gramatica& gramatica)
 {
@@ -142,5 +144,46 @@ bool Gramatica::verificare()
 
 void Gramatica::generare()
 {
+	std::string word = std::string(&m_simbolStart);
+	std::cout << word;
+
+	std::vector<Productie> possibleProductions;
+	while (true)
+	{
+		for (auto production : m_productii)
+		{
+			if (word.find(production.first, 0) != std::string::npos)
+			{
+				possibleProductions.push_back(production);
+			}
+		}
+
+		if (possibleProductions.empty()) break;
+		std::cout << " -> ";
+
+		std::random_device rd;
+		std::mt19937 eng(rd());
+		std::uniform_int_distribution<> distr(0, possibleProductions.size() - 1);
+
+		Productie selectedProduction = possibleProductions[distr(eng)];
+
+		std::vector<int> possiblePositions;
+
+		int currentPosition = word.find(selectedProduction.first, 0);
+		while (currentPosition != std::string::npos)
+		{
+			possiblePositions.push_back(currentPosition);
+			currentPosition = word.find(selectedProduction.first, currentPosition + 1);
+		}
+
+		distr = std::uniform_int_distribution<>(0, possiblePositions.size() - 1);
+
+		int selectedPosition = possiblePositions[distr(eng)];
+		word.replace(selectedPosition, selectedProduction.first.size(), selectedProduction.second);
+		std::cout << word;
+
+		possibleProductions.clear();
+	}
+
 
 }

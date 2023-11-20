@@ -9,5 +9,8 @@ int main()
 	Gramatica gramatica;
 
 	fin >> gramatica;
-	std::cout << gramatica;
+	std::cout << gramatica << std::endl;
+
+	gramatica.generare();
+
 }

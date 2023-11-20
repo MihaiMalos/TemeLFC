@@ -13,12 +13,6 @@ public:
 	bool verificare();
 	void generare();
 
-private:
-	std::set<char> m_terminale, m_neterminale;
-	char m_simbolStart;
-	std::set<Productie> m_productii;
-
-
 public:
 	friend std::istream& operator>>(std::istream& in, Gramatica& gramatica);
 	friend std::ostream& operator<<(std::ostream& out, const Gramatica& gramatica);
@@ -29,5 +23,10 @@ private:
 	bool VerificareCond3();
 	bool VerificareCond4();
 	bool VerificareCond5();
+
+private:
+	std::set<char> m_terminale, m_neterminale;
+	char m_simbolStart;
+	std::set<Productie> m_productii;
 };
 
