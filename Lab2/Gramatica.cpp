@@ -93,7 +93,40 @@ bool Gramatica::VerificareCond4()
 }
 bool Gramatica::VerificareCond5()
 {
-	return false;
+	for (auto productie : m_productii)
+	{
+		std::string firstMember = productie.first;
+		std::string secondMember = productie.second;
+
+		for (char neterminal : m_neterminale)
+		{
+			while(!firstMember.empty() && firstMember.find(neterminal) != std::string::npos)
+				firstMember.erase(firstMember.find(neterminal));
+
+			while (!secondMember.empty() && secondMember.find(neterminal) != std::string::npos)
+				secondMember.erase(secondMember.find(neterminal));
+
+			if (firstMember.empty())
+				break;
+		}
+
+		if (!firstMember.empty())
+			return false;
+
+		for (char terminal : m_terminale)
+		{
+			while (!secondMember.empty() && secondMember.find(terminal) != std::string::npos)
+				secondMember.erase(secondMember.find(terminal));
+
+			if (secondMember.empty())
+				break;
+		}
+
+		if (!secondMember.empty())
+			return false;
+	}
+
+	return true;
 }
 
 bool Gramatica::verificare()
@@ -101,7 +134,8 @@ bool Gramatica::verificare()
 	if (!VerificareCond1() ||
 		!VerificareCond2() ||
 		!VerificareCond3() ||
-		!VerificareCond4())
+		!VerificareCond4() ||
+		!VerificareCond5())
 		return false;	
 	return true;
 }
