@@ -133,10 +133,8 @@ bool Grammar::FifthVerificationLayer()
 
 bool Grammar::VerifyGrammer()
 {
-	if (!FirstVerificationLayer() ||
-		!SecondVerificationLayer() ||
-		!ThirdVerificationLayer() ||
-		!FourthVerificationLayer() ||
+	if (!FirstVerificationLayer() || !SecondVerificationLayer() ||
+		!ThirdVerificationLayer() || !FourthVerificationLayer() ||
 		!FifthVerificationLayer())
 		return false;	
 	return true;
@@ -179,7 +177,12 @@ void Grammar::GenerateWord()
 		distr = std::uniform_int_distribution<>(0, possiblePositions.size() - 1);
 
 		int selectedPosition = possiblePositions[distr(eng)];
+
+		if (selectedProduction.second == std::string(&lambda)) 
+			selectedProduction.second = std::string("");
+
 		word.replace(selectedPosition, selectedProduction.first.size(), selectedProduction.second);
+
 		std::cout << word;
 
 		possibleProductions.clear();

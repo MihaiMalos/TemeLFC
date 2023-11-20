@@ -69,11 +69,12 @@ void Menu(Grammar& gramatica)
 int main()
 {
 	std::ifstream fin("intrare.txt");
-	Grammar gramatica;
+	Grammar grammar;
 
-	fin >> gramatica;
-	std::cout << gramatica << std::endl;
+	fin >> grammar;
+	std::cout << grammar.VerifyGrammer() << std::endl;
+	std::cout << grammar << std::endl;
 
-	gramatica.GenerateWord();
+	grammar.GenerateWord();
 
 }

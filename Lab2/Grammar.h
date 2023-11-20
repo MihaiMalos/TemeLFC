@@ -28,5 +28,6 @@ private:
 	std::set<char> m_terminals, m_nonterminals;
 	char m_startSymbol;
 	std::set<Production> m_productions;
+	const char lambda = '-';
 };
 
