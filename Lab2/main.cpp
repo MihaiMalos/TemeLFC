@@ -1,9 +1,9 @@
 #include <fstream>
 #include <iostream>
 
-#include "Gramatica.h"
+#include "Grammar.h"
 
-void Menu(Gramatica& gramatica)
+void Menu(Grammar& gramatica)
 {
 		uint8_t type;
 		std::cout
@@ -69,11 +69,11 @@ void Menu(Gramatica& gramatica)
 int main()
 {
 	std::ifstream fin("intrare.txt");
-	Gramatica gramatica;
+	Grammar gramatica;
 
 	fin >> gramatica;
 	std::cout << gramatica << std::endl;
 
-	gramatica.generare();
+	gramatica.GenerateWord();
 
 }

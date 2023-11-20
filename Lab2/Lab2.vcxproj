@@ -127,11 +127,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Gramatica.cpp" />
+    <ClCompile Include="Grammar.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Gramatica.h" />
+    <ClInclude Include="Grammar.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="intrare.txt" />
