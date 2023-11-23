@@ -69,13 +69,15 @@ std::ostream& operator<<(std::ostream& out, const Grammar& grammar)
 bool Grammar::FirstVerificationLayer()
 {
 	for (auto terminal : m_terminals)
+	{
 		if (m_nonterminals.find(terminal) != m_nonterminals.end())
 			return false;
+	}
 	return true;
 }
 bool Grammar::SecondVerificationLayer()
 {
-	return m_nonterminals.find(m_startSymbol) == m_nonterminals.end();
+	return m_nonterminals.find(m_startSymbol) != m_nonterminals.end();
 }
 bool Grammar::ThirdVerificationLayer()
 {
@@ -103,28 +105,28 @@ bool Grammar::FifthVerificationLayer()
 		for (char nonterminal : m_nonterminals)
 		{
 			while(!firstMember.empty() && firstMember.find(nonterminal) != std::string::npos)
-				firstMember.erase(firstMember.find(nonterminal));
+				firstMember.erase(firstMember.find(nonterminal),1);
 
 			while (!secondMember.empty() && secondMember.find(nonterminal) != std::string::npos)
-				secondMember.erase(secondMember.find(nonterminal));
+				secondMember.erase(secondMember.find(nonterminal),1);
 
 			if (firstMember.empty())
 				break;
 		}
 
-		if (!firstMember.empty())
-			return false;
-
 		for (char terminal : m_terminals)
 		{
+			while (!firstMember.empty() && firstMember.find(terminal) != std::string::npos)
+				firstMember.erase(firstMember.find(terminal),1);
+
 			while (!secondMember.empty() && secondMember.find(terminal) != std::string::npos)
-				secondMember.erase(secondMember.find(terminal));
+				secondMember.erase(secondMember.find(terminal),1);
 
 			if (secondMember.empty())
 				break;
 		}
 
-		if (!secondMember.empty())
+		if (!secondMember.empty() || !firstMember.empty())
 			return false;
 	}
 
