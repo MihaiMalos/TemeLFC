@@ -11,7 +11,8 @@ class Grammar
 {
 public:
 	bool VerifyGrammer();
-	void GenerateWord();
+	void GenerateWord();	
+	bool isRegularGrammar();
 
 public:
 	friend std::istream& operator>>(std::istream& in, Grammar& grammar);

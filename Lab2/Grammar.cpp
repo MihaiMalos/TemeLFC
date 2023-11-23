@@ -27,9 +27,9 @@ std::istream& operator>>(std::istream& in, Grammar& grammar)
 
 	for (int index = 0; index < nrProductions; index++)
 	{
-		std::string membruStang, membruDrept;
-		in >> membruStang >> membruDrept;
-		grammar.m_productions.emplace(membruStang, membruDrept);
+		std::string firstMember, secondMember;
+		in >> firstMember >> secondMember;
+		grammar.m_productions.emplace(firstMember, secondMember);
 	}
 
 	return in;
@@ -128,6 +128,43 @@ bool Grammar::FifthVerificationLayer()
 
 		if (!secondMember.empty() || !firstMember.empty())
 			return false;
+	}
+
+	return true;
+}
+
+
+bool Grammar::isRegularGrammar()
+{
+	for (const auto& product : m_productions)
+	{
+		const std::string& firstMember = product.first;
+		const std::string& secondMember = product.second;
+
+		if (secondMember.size() > 2 || (secondMember.size() == 2 && m_nonterminals.find(secondMember[1]) == m_nonterminals.end()))
+		{
+			return false;
+		}
+
+		if (firstMember.size() != 1 || m_nonterminals.find(firstMember[0]) == m_nonterminals.end())
+		{
+			return false;
+		}
+	}
+
+	for (const auto& product : m_productions)
+	{
+		if (product.second == "&") // "&" represent epsilon
+		{
+			const char& neterminal = product.first[0];
+			for (const auto& otherProduct : m_productions)
+			{
+				if (otherProduct.first[0] == neterminal && otherProduct.second != "&")
+				{
+					return false;
+				}
+			}
+		}
 	}
 
 	return true;
