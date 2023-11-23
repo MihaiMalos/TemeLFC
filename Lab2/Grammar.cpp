@@ -1,5 +1,6 @@
 ﻿#include <iostream>
 #include <random>
+#include <queue>
 
 #include "Grammar.h"
 
@@ -181,51 +182,79 @@ bool Grammar::VerifyGrammer()
 
 void Grammar::GenerateWord()
 {
-	std::string word = std::string(&m_startSymbol);
-	std::cout << word;
-
-	std::vector<Production> possibleProductions;
 	while (true)
 	{
-		for (auto production : m_productions)
+		bool validWord = true;
+		std::vector<std::string> wordTransformations;
+		std::string word = std::string(&m_startSymbol);
+
+		wordTransformations.push_back(word);
+
+		std::vector<Production> possibleProductions;
+		while (true)
 		{
-			if (word.find(production.first, 0) != std::string::npos)
+			for (auto production : m_productions)
 			{
-				possibleProductions.push_back(production);
+				if (word.find(production.first, 0) != std::string::npos)
+				{
+					possibleProductions.push_back(production);
+				}
 			}
+
+			if (possibleProductions.empty())
+			{
+				for (auto nonterminal : m_nonterminals)
+				{
+					if (word.find(nonterminal, 0) != std::string::npos)
+					{
+						validWord = false;
+					}
+				}
+				if (!validWord) wordTransformations.clear();
+				break;
+			}
+
+			std::random_device rd;
+			std::mt19937 eng(rd());
+			std::uniform_int_distribution<> distr(0, possibleProductions.size() - 1);
+
+			Production selectedProduction = possibleProductions[distr(eng)];
+
+			std::vector<int> possiblePositions;
+
+			int currentPosition = word.find(selectedProduction.first, 0);
+			while (currentPosition != std::string::npos)
+			{
+				possiblePositions.push_back(currentPosition);
+				currentPosition = word.find(selectedProduction.first, currentPosition + 1);
+			}
+
+			distr = std::uniform_int_distribution<>(0, possiblePositions.size() - 1);
+
+			int selectedPosition = possiblePositions[distr(eng)];
+
+			if (selectedProduction.second == std::string(&lambda))
+				selectedProduction.second = std::string("");
+
+			word.replace(selectedPosition, selectedProduction.first.size(), selectedProduction.second);
+
+			wordTransformations.push_back(word);
+
+
+			possibleProductions.clear();
 		}
 
-		if (possibleProductions.empty()) break;
-		std::cout << " -> ";
-
-		std::random_device rd;
-		std::mt19937 eng(rd());
-		std::uniform_int_distribution<> distr(0, possibleProductions.size() - 1);
-
-		Production selectedProduction = possibleProductions[distr(eng)];
-
-		std::vector<int> possiblePositions;
-
-		int currentPosition = word.find(selectedProduction.first, 0);
-		while (currentPosition != std::string::npos)
+		if (validWord)
 		{
-			possiblePositions.push_back(currentPosition);
-			currentPosition = word.find(selectedProduction.first, currentPosition + 1);
+			for (auto word : wordTransformations)
+			{
+				std::cout << word;
+				if (word != wordTransformations.back())
+					std::cout << " -> ";
+
+			}
+			break;
 		}
 
-		distr = std::uniform_int_distribution<>(0, possiblePositions.size() - 1);
-
-		int selectedPosition = possiblePositions[distr(eng)];
-
-		if (selectedProduction.second == std::string(&lambda)) 
-			selectedProduction.second = std::string("");
-
-		word.replace(selectedPosition, selectedProduction.first.size(), selectedProduction.second);
-
-		std::cout << word;
-
-		possibleProductions.clear();
 	}
-
-
 }
