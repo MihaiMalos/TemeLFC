@@ -171,6 +171,21 @@ bool Grammar::isRegularGrammar()
 	return true;
 }
 
+char Grammar::GetStart()
+{
+	return m_startSymbol;
+}
+
+std::set<char> Grammar::GetTerminals()
+{
+	return m_terminals;
+}
+
+std::set<Production> Grammar::GetProductions()
+{
+	return m_productions;
+}
+
 bool Grammar::VerifyGrammer()
 {
 	if (!FirstVerificationLayer() || !SecondVerificationLayer() ||

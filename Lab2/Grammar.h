@@ -13,6 +13,9 @@ public:
 	bool VerifyGrammer();
 	void GenerateWord();	
 	bool isRegularGrammar();
+	char GetStart();
+	std::set<char> GetTerminals();
+	std::set<Production> GetProductions();
 
 public:
 	friend std::istream& operator>>(std::istream& in, Grammar& grammar);
