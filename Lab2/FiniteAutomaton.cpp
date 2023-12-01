@@ -15,32 +15,31 @@ FiniteAutomaton::~FiniteAutomaton()
 
 void FiniteAutomaton::CreateAutomaton(Grammar grammar)
 {
-	if (grammar.isRegularGrammar())
+	if (!grammar.IsRegular()) std::cout << "Not a regular grammar\n";
+
+	this->m_firstState = grammar.GetStart();
+	this->m_alphabet = grammar.GetTerminals();
+	std::set<Production> products = grammar.GetProductions();
+
+	for (auto& product : products)
 	{
-		this->m_firstState = grammar.GetStart();
-		this->m_alphabet = grammar.GetTerminals();
-		std::set<Production> products = grammar.GetProductions();
-
-		for (auto& product : products)
+		if (std::find(m_states.begin(), m_states.end(), product.first[0]) == m_states.end())
 		{
-			if (std::find(m_states.begin(), m_states.end(), product.first[0]) == m_states.end())
+			m_states.push_back(product.first[0]);
+		}
+		if (product.second.size() == 1) //Case if terminal
+		{
+			if (!m_finalStates)
 			{
-				m_states.push_back(product.first[0]);
+				m_finalStates = 'T';
 			}
-
-			if (product.second.size() == 1) //Case if terminal
-			{
-				if (m_finalStates)
-				{
-					m_finalStates = 'T';
-				}
-				m_transitions.insert(std::pair<Input, Output>({ product.first[0],product.second[0] }, m_finalStates));
-			}
-			else
-			m_transitions.insert(std::pair<Input, Output>({ product.first[0],product.second[0] }, product.second[1] ));
+			m_transitions.insert(std::pair<Input, Output>({ product.first[0],product.second[0] }, m_finalStates));
+		}
+		else
+		{
+			m_transitions.insert(std::pair<Input, Output>({ product.first[0],product.second[0] }, product.second[1]));
 		}
 	}
-	else std::cout << "Not a regular grammar\n";
 }
 
 
@@ -51,6 +50,19 @@ bool FiniteAutomaton::VerifyAutomaton()
 	else return false;
 
 }
+
+bool FiniteAutomaton::IsDeterministic()
+{
+	for (auto transition : m_transitions)
+	{
+		if (m_transitions.count(transition.first) > 1)
+		{
+			return false;
+		}
+	}
+	return true;
+}
+
 bool FiniteAutomaton::VerifyCharacters()
 {
 	for (const char& it : m_alphabet)

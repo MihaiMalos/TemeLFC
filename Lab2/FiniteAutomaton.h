@@ -18,6 +18,7 @@ public:
 	std::set<char> alphabet, char finalStates, Transitions transitions);
 	~FiniteAutomaton();
 	bool VerifyAutomaton();
+	bool IsDeterministic();
 	void CreateAutomaton(Grammar grammar);
 	
 private:
@@ -28,6 +29,7 @@ private:
 	Transitions m_transitions;
 
 private:
+	const char lambda = '-';
 	bool VerifyCharacters();
 	bool VerifyStartState();
 	bool VerifyFinalStates();

@@ -2,6 +2,7 @@
 #include <iostream>
 
 #include "Grammar.h"
+#include "FiniteAutomaton.h"
 
 void Menu(Grammar& gramatica)
 {
@@ -73,8 +74,12 @@ int main()
 
 	fin >> grammar;
 	std::cout << grammar.VerifyGrammer() << std::endl;
+	std::cout << grammar.IsRegular() << std::endl;
 	std::cout << grammar << std::endl;
 
-	grammar.GenerateWord();
+	FiniteAutomaton automaton;
+	automaton.CreateAutomaton(grammar);
+	std::cout << automaton.IsDeterministic();
+
 
 }

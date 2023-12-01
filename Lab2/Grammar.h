@@ -12,7 +12,7 @@ class Grammar
 public:
 	bool VerifyGrammer();
 	void GenerateWord();	
-	bool isRegularGrammar();
+	bool IsRegular();
 	char GetStart();
 	std::set<char> GetTerminals();
 	std::set<Production> GetProductions();

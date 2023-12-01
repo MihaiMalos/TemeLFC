@@ -90,9 +90,8 @@ bool Grammar::ThirdVerificationLayer()
 }
 bool Grammar::FourthVerificationLayer()
 {
-	std::string symbol(1, m_startSymbol);
 	for (auto production : m_productions)
-		if (production.first == symbol)
+		if (production.first == &m_startSymbol)
 			return true;
 	return false;
 }
@@ -111,7 +110,7 @@ bool Grammar::FifthVerificationLayer()
 			while (!secondMember.empty() && secondMember.find(nonterminal) != std::string::npos)
 				secondMember.erase(secondMember.find(nonterminal),1);
 
-			if (firstMember.empty())
+			if (firstMember.empty() && secondMember.empty())
 				break;
 		}
 
@@ -123,11 +122,11 @@ bool Grammar::FifthVerificationLayer()
 			while (!secondMember.empty() && secondMember.find(terminal) != std::string::npos)
 				secondMember.erase(secondMember.find(terminal),1);
 
-			if (secondMember.empty())
+			if (firstMember.empty() && secondMember.empty())
 				break;
 		}
 
-		if (!secondMember.empty() || !firstMember.empty())
+		if (!firstMember.empty() || !secondMember.empty() && secondMember != &lambda)
 			return false;
 	}
 
@@ -135,14 +134,23 @@ bool Grammar::FifthVerificationLayer()
 }
 
 
-bool Grammar::isRegularGrammar()
+bool Grammar::IsRegular()
 {
 	for (const auto& product : m_productions)
 	{
 		const std::string& firstMember = product.first;
 		const std::string& secondMember = product.second;
 
-		if (secondMember.size() > 2 || (secondMember.size() == 2 && m_nonterminals.find(secondMember[1]) == m_nonterminals.end()))
+		bool isFirstTerminal = m_terminals.find(secondMember[0]) != m_terminals.end();
+		bool isFirstNonTerminal = m_nonterminals.find(secondMember[0]) != m_nonterminals.end();
+		bool isSecondNonTerminal = m_nonterminals.find(secondMember[1]) != m_nonterminals.end();
+
+		if (secondMember.size() == 1 && isFirstNonTerminal)
+		{
+			return false;
+		}
+
+		if (secondMember.size() > 2 || (secondMember.size() == 2 && (!isFirstTerminal || !isSecondNonTerminal)))
 		{
 			return false;
 		}
@@ -155,12 +163,12 @@ bool Grammar::isRegularGrammar()
 
 	for (const auto& product : m_productions)
 	{
-		if (product.second == "&") // "&" represent epsilon
+		if (product.second == &lambda)
 		{
-			const char& neterminal = product.first[0];
+			const char& nonterminal = product.first[0];
 			for (const auto& otherProduct : m_productions)
 			{
-				if (otherProduct.first[0] == neterminal && otherProduct.second != "&")
+				if (otherProduct.second.find(m_startSymbol) != std::string::npos)
 				{
 					return false;
 				}
@@ -201,7 +209,7 @@ void Grammar::GenerateWord()
 	{
 		bool validWord = true;
 		std::vector<std::string> wordTransformations;
-		std::string word = std::string(&m_startSymbol);
+		std::string word = &m_startSymbol;
 
 		wordTransformations.push_back(word);
 
@@ -248,7 +256,7 @@ void Grammar::GenerateWord()
 
 			int selectedPosition = possiblePositions[distr(eng)];
 
-			if (selectedProduction.second == std::string(&lambda))
+			if (selectedProduction.second == &lambda)
 				selectedProduction.second = std::string("");
 
 			word.replace(selectedPosition, selectedProduction.first.size(), selectedProduction.second);
