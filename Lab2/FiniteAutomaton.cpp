@@ -1,9 +1,9 @@
-#include "FiniteAutomaton.h"
+﻿#include "FiniteAutomaton.h"
 
 FiniteAutomaton::FiniteAutomaton()
 {
 }
-FiniteAutomaton::FiniteAutomaton(std::vector<char> states, char firstState,
+FiniteAutomaton::FiniteAutomaton(std::set<char> states, char firstState,
 	std::set<char> alphabet,char finalStates, Transitions transitions)
 	:m_states{ states }, m_firstState{ firstState }, m_alphabet{ alphabet }
 	, m_finalStates{ finalStates }, m_transitions{ transitions }
@@ -15,7 +15,11 @@ FiniteAutomaton::~FiniteAutomaton()
 
 void FiniteAutomaton::CreateAutomaton(Grammar grammar)
 {
-	if (!grammar.IsRegular()) std::cout << "Not a regular grammar\n";
+	if (!grammar.IsRegular()) 
+	{
+		std::cout << "Not a regular grammar\n";
+		return;
+	}
 
 	this->m_firstState = grammar.GetStart();
 	this->m_alphabet = grammar.GetTerminals();
@@ -25,15 +29,24 @@ void FiniteAutomaton::CreateAutomaton(Grammar grammar)
 	{
 		if (std::find(m_states.begin(), m_states.end(), product.first[0]) == m_states.end())
 		{
-			m_states.push_back(product.first[0]);
+			m_states.insert(product.first[0]);
 		}
 		if (product.second.size() == 1) //Case if terminal
 		{
-			if (!m_finalStates)
+			if (product.first == &m_firstState && product.second == &lambda)
 			{
-				m_finalStates = 'T';
+				m_finalStates.insert(m_firstState);
+				m_transitions.insert(std::pair<Input, Output>({ product.first[0],product.second[0] }, m_firstState));
 			}
-			m_transitions.insert(std::pair<Input, Output>({ product.first[0],product.second[0] }, m_finalStates));
+			else
+			{
+				if (m_finalStates.find('T') == m_finalStates.end())
+				{
+					m_finalStates.insert('T');
+					m_states.insert('T');
+				}
+				m_transitions.insert(std::pair<Input, Output>({ product.first[0],product.second[0] }, 'T'));
+			}
 		}
 		else
 		{
@@ -66,7 +79,7 @@ bool FiniteAutomaton::IsDeterministic()
 bool FiniteAutomaton::VerifyCharacters()
 {
 	for (const char& it : m_alphabet)
-		if (std::find(m_states.begin(), m_states.end(), it) != m_states.end())
+		if (m_states.find(it) != m_states.end())
 		{
 			return false;
 		}
@@ -74,15 +87,19 @@ bool FiniteAutomaton::VerifyCharacters()
 }
 bool FiniteAutomaton::VerifyStartState()
 {
-	if (std::find(m_states.begin(), m_states.end(), m_firstState) == m_states.end())
+	if (m_states.find(m_firstState) == m_states.end())
 		return false;
 
 	return true;
 }
 bool FiniteAutomaton::VerifyFinalStates()
 {
-	if (std::find(m_states.begin(), m_states.end(), m_finalStates) == m_states.end())
-		return false;
+	for (const char& it : m_finalStates)
+	{
+		if (m_states.find(it) == m_states.end())
+			return false;
+	}
+
 		
 	return true;
 }
@@ -103,6 +120,40 @@ bool FiniteAutomaton::VerifyTransitionFunctions()
 
 std::ostream& operator<<(std::ostream& out, const FiniteAutomaton& automaton)
 {
-	//TODO
+	out << "M = ({";
+	for (auto& it : automaton.m_states)
+	{
+		out << it;
+		if (it != *automaton.m_states.rbegin())
+			out << ",";
+	}
+	out << "},";
+
+	out << "{";
+	for (auto it : automaton.m_alphabet)
+	{
+		out << it;
+		if (it != *automaton.m_alphabet.rbegin())
+			out << ",";
+	}
+	out << "},";
+
+	out << "delta," << automaton.m_firstState << ",";
+
+	out << "{";
+	for (auto it : automaton.m_finalStates)
+	{
+		out << it;
+		if (it != *automaton.m_finalStates.rbegin())
+			out << ",";
+	}
+	out << "}), delta continand urmatoarele tranzitii:\n";
+
+	for (const auto& transition : automaton.m_transitions)
+	{
+		out << "delta(" << transition.first.first << ", " << transition.first.second << ")";
+		out << " = " << transition.second << std::endl;
+	}
+
 	return out;
 }

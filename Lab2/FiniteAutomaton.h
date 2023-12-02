@@ -14,7 +14,7 @@ class FiniteAutomaton
 {
 public:
 	FiniteAutomaton();
-	FiniteAutomaton(std::vector<char> states, char firstState, 
+	FiniteAutomaton(std::set<char> states, char firstState, 
 	std::set<char> alphabet, char finalStates, Transitions transitions);
 	~FiniteAutomaton();
 	bool VerifyAutomaton();
@@ -22,10 +22,10 @@ public:
 	void CreateAutomaton(Grammar grammar);
 	
 private:
-	std::vector<char> m_states;
+	std::set<char> m_states;
 	char m_firstState;
 	std::set<char> m_alphabet;
-	char m_finalStates;
+	std::set<char> m_finalStates;
 	Transitions m_transitions;
 
 private:

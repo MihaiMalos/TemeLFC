@@ -79,7 +79,8 @@ int main()
 
 	FiniteAutomaton automaton;
 	automaton.CreateAutomaton(grammar);
-	std::cout << automaton.IsDeterministic();
+	std::cout << automaton.VerifyAutomaton() << std::endl;
+	std::cout << automaton;
 
 
 }
