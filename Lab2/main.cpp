@@ -83,7 +83,9 @@ void Menu(Grammar& grammar)
 			}
 			case 3:
 			{
-				std::cout << "\n";
+				FiniteAutomaton automaton;
+				automaton.CreateAutomaton(grammar);
+				std::cout << automaton.VerifyWord("aabc");
 				break;
 			}
 			case 4:

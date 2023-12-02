@@ -20,6 +20,7 @@ public:
 	bool VerifyAutomaton();
 	bool IsDeterministic();
 	void CreateAutomaton(Grammar grammar);
+	bool VerifyWord(std::string word);
 	
 private:
 	std::set<char> m_states;
