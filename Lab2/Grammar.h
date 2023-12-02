@@ -11,7 +11,7 @@ class Grammar
 {
 public:
 	bool VerifyGrammer();
-	void GenerateWord();	
+	std::vector<std::string> GenerateWord();	
 	bool IsRegular();
 	char GetStart();
 	std::set<char> GetTerminals();

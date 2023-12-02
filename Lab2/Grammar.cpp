@@ -203,7 +203,7 @@ bool Grammar::VerifyGrammer()
 	return true;
 }
 
-void Grammar::GenerateWord()
+std::vector<std::string> Grammar::GenerateWord()
 {
 	while (true)
 	{
@@ -269,14 +269,7 @@ void Grammar::GenerateWord()
 
 		if (validWord)
 		{
-			for (auto word : wordTransformations)
-			{
-				std::cout << word;
-				if (word != wordTransformations.back())
-					std::cout << " -> ";
-
-			}
-			break;
+			return wordTransformations;
 		}
 
 	}

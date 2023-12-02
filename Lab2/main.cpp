@@ -4,67 +4,97 @@
 #include "Grammar.h"
 #include "FiniteAutomaton.h"
 
-void Menu(Grammar& gramatica)
+void Menu(Grammar& grammar)
 {
-		uint8_t type;
-		std::cout
-			<< "---------------------------------------\n"
-			<< "|                Menu                 |\n"
-			<< "---------------------------------------\n"
-			<< "|     Command    |        Means       |\n"
-			<< "---------------------------------------\n"
-			<< "|       0        |       Display      |\n"
-			<< "|                |     the Grammar    |\n"
-			<< "---------------------------------------\n"
-			<< "|       1        |     Generate n     |\n"
-			<< "|                |  words in Grammar  |\n"
-			<< "---------------------------------------\n"
-			<< "|       2        |  Make and display  |\n"
-			<< "|                |   the Automaton    |\n"
-			<< "---------------------------------------\n"
-			<< "|                |  Verify a word is  |\n"
-			<< "|	    3        |   accepted for an  |\n"
-			<< "|	    	     |      Automaton     |\n"
-			<< "---------------------------------------\n"
-			<< "|                |  Generate word in  |\n"
-			<< "|       4        | Grammar and verify |\n"
-			<< "|                | accepted for an is |\n"
-			<< "|                |      Automaton     |\n"
-			<< "---------------------------------------\n"
-			<< "|       5        |        Exit        |\n"
-			<< "---------------------------------------\n";
+		
+		int type;
+			std::cout
+				<< "---------------------------------------\n"
+				<< "|                Menu                 |\n"
+				<< "---------------------------------------\n"
+				<< "|     Command    |        Means       |\n"
+				<< "---------------------------------------\n"
+				<< "|       0        |       Display      |\n"
+				<< "|                |     the Grammar    |\n"
+				<< "---------------------------------------\n"
+				<< "|       1        |     Generate n     |\n"
+				<< "|                |  words in Grammar  |\n"
+				<< "---------------------------------------\n"
+				<< "|       2        |  Make and display  |\n"
+				<< "|                |   the Automaton    |\n"
+				<< "---------------------------------------\n"
+				<< "|                |  Verify a word is  |\n"
+				<< "|       3        |   accepted for an  |\n"
+				<< "|                |      Automaton     |\n"
+				<< "---------------------------------------\n"
+				<< "|                |  Generate word in  |\n"
+				<< "|       4        | Grammar and verify |\n"
+				<< "|                | accepted for an is |\n"
+				<< "|                |      Automaton     |\n"
+				<< "---------------------------------------\n"
+				<< "|       5        |        Exit        |\n"
+				<< "---------------------------------------\n";
+			do
+			{
+			std::cout << "\nIntroduce option: ";
+			std::cin >> type;
+			switch (type)
+			{
+			case 0:
+			{
+				std::cout << grammar;
+				break;
+			}
+			case 1:
+			{
+				int n, index = 0;
+				std::cout << "n = "; std::cin >> n;
+				std::set<std::string> words;
 
-		std::cin >> type;
-		switch (type)
-		{
-		case 0:
-		{
-			std::cout << "\n";
-			break;
-		}
-		case 1:
-		{
-			std::cout << "\n";
-			break;
-		}
-		case 2:
-		{
-			std::cout << "\n";
-			break;
-		}
-		case 3:
-		{
-			std::cout << "\n";
-			break;
-		}
-		case 4:
-		{
-			std::cout << "\n";
-			break;
-		}
-		default:
-			break;
-		}
+				
+				while (words.size() != n)
+				{
+					auto wordTransformations = grammar.GenerateWord();
+
+					if (words.find(wordTransformations.back()) == words.end())
+					{
+						words.insert(wordTransformations.back());
+					}
+					else continue;
+
+					std::cout << "[" << ++index << "] ";
+					for (auto word : wordTransformations)
+					{
+						std::cout << word;
+						if (word != wordTransformations.back())
+							std::cout << " -> ";
+					}
+
+					std::cout << std::endl;
+				}
+				break;
+			}
+			case 2:
+			{
+				FiniteAutomaton automaton;
+				automaton.CreateAutomaton(grammar);
+				std::cout << automaton;
+				break;
+			}
+			case 3:
+			{
+				std::cout << "\n";
+				break;
+			}
+			case 4:
+			{
+				std::cout << "\n";
+				break;
+			}
+			default:
+				break;
+			}
+		} while (type != 5);
 }
 
 int main()
@@ -73,14 +103,11 @@ int main()
 	Grammar grammar;
 
 	fin >> grammar;
-	std::cout << grammar.VerifyGrammer() << std::endl;
-	std::cout << grammar.IsRegular() << std::endl;
-	std::cout << grammar << std::endl;
 
-	FiniteAutomaton automaton;
-	automaton.CreateAutomaton(grammar);
-	std::cout << automaton.VerifyAutomaton() << std::endl;
-	std::cout << automaton;
+	if (grammar.IsRegular() && grammar.VerifyGrammer())
+	{
+		Menu(grammar);
+	}
 
 
 }
