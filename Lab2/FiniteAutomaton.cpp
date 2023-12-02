@@ -57,6 +57,8 @@ void FiniteAutomaton::CreateAutomaton(Grammar grammar)
 
 bool FiniteAutomaton::VerifyWord(std::string word)
 {
+	if (word.find(&lambda) != std::string::npos && word.size() > 1) return false;
+
 	std::set<char> currentStateSet;
 	currentStateSet.insert(m_firstState);
 
@@ -65,14 +67,18 @@ bool FiniteAutomaton::VerifyWord(std::string word)
 		std::set<char> nextStateSet;
 
 		for (const char& state : currentStateSet)
+		{
 			if (m_transitions.find({ state,symbol }) != m_transitions.end())
 			{
 				auto range = m_transitions.equal_range({ state,symbol });
 
 				//find all transitions possible
 				for (auto it = range.first; it != range.second; ++it)
+				{
 					nextStateSet.insert(it->second);
+				}
 			}
+		}
 		currentStateSet = nextStateSet;
 	}
 

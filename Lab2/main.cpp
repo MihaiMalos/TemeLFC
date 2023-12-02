@@ -8,31 +8,33 @@ void Menu(Grammar& grammar)
 {
 		
 		int type;
+		FiniteAutomaton automaton;
+		automaton.CreateAutomaton(grammar);
 			std::cout
 				<< "---------------------------------------\n"
 				<< "|                Menu                 |\n"
 				<< "---------------------------------------\n"
 				<< "|     Command    |        Means       |\n"
 				<< "---------------------------------------\n"
-				<< "|       0        |       Display      |\n"
+				<< "|       1        |       Display      |\n"
 				<< "|                |     the Grammar    |\n"
 				<< "---------------------------------------\n"
-				<< "|       1        |     Generate n     |\n"
+				<< "|       2        |     Generate n     |\n"
 				<< "|                |  words in Grammar  |\n"
 				<< "---------------------------------------\n"
-				<< "|       2        |  Make and display  |\n"
+				<< "|       3        |  Make and display  |\n"
 				<< "|                |   the Automaton    |\n"
 				<< "---------------------------------------\n"
 				<< "|                |  Verify a word is  |\n"
-				<< "|       3        |   accepted for an  |\n"
+				<< "|       4        |   accepted for an  |\n"
 				<< "|                |      Automaton     |\n"
 				<< "---------------------------------------\n"
 				<< "|                |  Generate word in  |\n"
-				<< "|       4        | Grammar and verify |\n"
+				<< "|       5        | Grammar and verify |\n"
 				<< "|                | accepted for an is |\n"
 				<< "|                |      Automaton     |\n"
 				<< "---------------------------------------\n"
-				<< "|       5        |        Exit        |\n"
+				<< "|       0        |        Exit        |\n"
 				<< "---------------------------------------\n";
 			do
 			{
@@ -40,12 +42,12 @@ void Menu(Grammar& grammar)
 			std::cin >> type;
 			switch (type)
 			{
-			case 0:
+			case 1:
 			{
 				std::cout << grammar;
 				break;
 			}
-			case 1:
+			case 2:
 			{
 				int n, index = 0;
 				std::cout << "n = "; std::cin >> n;
@@ -65,7 +67,8 @@ void Menu(Grammar& grammar)
 					std::cout << "[" << ++index << "] ";
 					for (auto word : wordTransformations)
 					{
-						std::cout << word;
+						if (word.empty()) std::cout << "-";
+						else std::cout << word;
 						if (word != wordTransformations.back())
 							std::cout << " -> ";
 					}
@@ -74,29 +77,47 @@ void Menu(Grammar& grammar)
 				}
 				break;
 			}
-			case 2:
-			{
-				FiniteAutomaton automaton;
-				automaton.CreateAutomaton(grammar);
-				std::cout << automaton;
-				break;
-			}
 			case 3:
 			{
-				FiniteAutomaton automaton;
-				automaton.CreateAutomaton(grammar);
-				std::cout << automaton.VerifyWord("aabc");
+				std::cout << automaton;
 				break;
 			}
 			case 4:
 			{
-				std::cout << "\n";
+				std::string word;
+
+				std::cout << "Introduce word to verify: "; std::cin >> word;
+				if (automaton.VerifyWord(word))
+				{
+					std::cout << "Word is accepted by automaton";
+				}
+				else
+				{
+					std::cout << "Word is NOT accepted by automaton";
+				}
+				break;
+			}
+			case 5:
+			{
+				std::string generatedWord = grammar.GenerateWord().back();
+				if (generatedWord.empty()) generatedWord = "-";
+				std::cout << "The word generated is: " << generatedWord << std::endl;
+				if (automaton.VerifyWord(generatedWord))
+				{
+					std::cout << "Word is accepted by automaton";
+				}
+				else
+				{
+					std::cout << "Word is NOT accepted by automaton";
+				}
+
+
 				break;
 			}
 			default:
 				break;
 			}
-		} while (type != 5);
+		} while (type != 0);
 }
 
 int main()
