@@ -1,12 +1,12 @@
+4
+S A B C
 3
-S A B
-2
-a b
+a b c
 S
 6
-S -
 S aA
-S bB
-A b
-B a
-B aB
+A aA
+A aB
+B bC
+C cB
+C c

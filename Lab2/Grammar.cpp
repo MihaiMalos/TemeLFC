@@ -165,7 +165,6 @@ bool Grammar::IsRegular()
 	{
 		if (product.second == &lambda)
 		{
-			const char& nonterminal = product.first[0];
 			for (const auto& otherProduct : m_productions)
 			{
 				if (otherProduct.second.find(m_startSymbol) != std::string::npos)
