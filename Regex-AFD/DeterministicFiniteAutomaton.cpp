@@ -2,41 +2,23 @@
 
 bool DeterministicFiniteAutomaton::VerifyWord(std::string word)
 {
-	/*
-	
-	DON'T FORGET TO TREAT LAMBDA RIGHT!
-	
-	*/
-
 	if (word.find(&lambda) != std::string::npos && word.size() > 1) return false;
 
-	std::set<char> currentStateSet;
-	currentStateSet.insert(m_firstState);
+	char currentState = m_firstState;
 
 	for (const char& symbol : word)
 	{
-		std::set<char> nextStateSet;
-
-		for (const char& state : currentStateSet)
+		auto state = m_transitions.find({ currentState, symbol });
+		if (state != m_transitions.end())
 		{
-			if (m_transitions.find({ state,symbol }) != m_transitions.end())
-			{
-				auto range = m_transitions.equal_range({ state,symbol });
-
-				//find all transitions possible
-				for (auto it = range.first; it != range.second; ++it)
-				{
-					nextStateSet.insert(it->second);
-				}
-			}
+			currentState = state->second;
 		}
-		currentStateSet = nextStateSet;
+		else return false;
 	}
 
-	// Something here i think
 	for (const auto& finalState : m_finalStates)
 	{
-		if (currentStateSet.find(finalState) != currentStateSet.end())
+		if (currentState == finalState)
 			return true;
 	}
 
