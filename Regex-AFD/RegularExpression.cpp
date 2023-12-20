@@ -4,7 +4,60 @@ const char RegularExpression::k_concatenation{ '.' };
 
 bool RegularExpression::IsValid()
 {
-	return false;
+	if (m_expression.empty())
+		return false;
+
+	size_t size{ m_expression.size() };
+	std::stack<char> parentheses;
+
+	for (size_t index{ 0 }; index < size; ++index)
+	{
+		if (m_expression[index] == '(')
+		{
+			parentheses.push(m_expression[index]);
+		}
+
+		if (m_expression[index] == ')')
+		{
+			if (parentheses.empty())
+				return false;
+			
+			parentheses.pop();
+		}
+
+		if (m_expression[index] == '|')
+		{
+			if (index == 0 || index == size - 1)
+				return false;
+
+			// we can have ( after | but not )
+			if (GetRank(m_expression[index - 1]) != -1 || 
+				GetRank(m_expression[index + 1]) > 0   ||
+				m_expression[index + 1] == ')' ) 
+			{
+				return false;
+			}
+		}
+
+		if (m_expression[index] == '*')
+		{
+			if (index == 0)
+				return false;
+
+			// we could have concatenation after * but m_expression 
+			// doesn't contain the concatenation operator
+			if (GetRank(m_expression[index - 1]) != -1 ||
+				GetRank(m_expression[index + 1]) > 0)
+			{
+				return false;
+			}
+		}
+	}
+
+	if (!parentheses.empty())
+		return false;
+	
+	return true;
 }
 
 DeterministicFiniteAutomaton RegularExpression::ConvertToAutomaton()
