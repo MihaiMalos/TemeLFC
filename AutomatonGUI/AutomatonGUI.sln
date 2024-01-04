@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34322.80
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AutomatonGUI", "AutomatonGUI.vcxproj", "{BC7BC01C-5018-4A0A-A595-D7117E97004F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BC7BC01C-5018-4A0A-A595-D7117E97004F}.Debug|x64.ActiveCfg = Debug|x64
+		{BC7BC01C-5018-4A0A-A595-D7117E97004F}.Debug|x64.Build.0 = Debug|x64
+		{BC7BC01C-5018-4A0A-A595-D7117E97004F}.Release|x64.ActiveCfg = Release|x64
+		{BC7BC01C-5018-4A0A-A595-D7117E97004F}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {4B25355F-BFE2-4751-B3EE-77400E9DDFDD}
+	EndGlobalSection
+EndGlobal
