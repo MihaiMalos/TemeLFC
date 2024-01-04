@@ -1,25 +1,18 @@
 #include "NFA.h"
 
-#include <ranges>
 #include <algorithm>
 
-NFA::NFA(QPointF& screenPos)
-	: FiniteAutomaton(screenPos)
-{
-	// Empty
-}
-
-void NFA::AddTransition(char& inputState, char& symbol, char& outputState)
+void NFA::AddTransition(QString& inputState, char& symbol, QString& outputState)
 {
 	m_transitions[{inputState, symbol}].push_back(outputState);
 }
 
-void NFA::RemoveTransition(char& inputState, char symbol, char& outputState)
+void NFA::RemoveTransition(QString& inputState, char symbol, QString& outputState)
 {
 	if (auto input = m_transitions.find({ inputState, symbol }); input != m_transitions.end())
 	{
 		auto& output = input->second;
-		std::ranges::remove_if(output, [&outputState](char state) { return state == outputState; });
+		auto it = std::erase_if(output, [&outputState](QString& state) { return state == outputState; });
 	}
 }
 

@@ -49,9 +49,12 @@
     <ClCompile Include="NFA.cpp">
       <Filter>Automatons</Filter>
     </ClCompile>
+    <ClCompile Include="FiniteAutomaton.cpp">
+      <Filter>Automatons</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="IFiniteAutomaton.h">
+    <ClInclude Include="FiniteAutomaton.h">
       <Filter>Automatons</Filter>
     </ClInclude>
     <ClInclude Include="DFA.h">

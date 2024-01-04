@@ -99,6 +99,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="FiniteAutomaton.cpp" />
     <ClCompile Include="NFA.cpp" />
     <QtRcc Include="AutomatonGUI.qrc" />
     <QtUic Include="AutomatonGUI.ui" />
@@ -108,7 +109,7 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="IFiniteAutomaton.h" />
+    <ClInclude Include="FiniteAutomaton.h" />
     <ClInclude Include="DFA.h" />
     <ClInclude Include="NFA.h" />
   </ItemGroup>

@@ -1,17 +1,11 @@
 #include "DFA.h"
 
-DFA::DFA(QPointF& screenPos)
-	: FiniteAutomaton(screenPos)
-{
-	// Empty
-}
-
-void DFA::AddTransition(char& inputState, char& symbol, char& outputState)
+void DFA::AddTransition(QString& inputState, char& symbol, QString& outputState)
 {
 	m_transitions[{inputState, symbol}] = outputState;
 }
 
-void DFA::RemoveTransition(char& inputState, char symbol)
+void DFA::RemoveTransition(QString& inputState, char symbol)
 {
 	m_transitions.erase({ inputState, symbol });
 }

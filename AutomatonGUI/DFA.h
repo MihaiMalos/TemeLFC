@@ -5,18 +5,18 @@
 #include <map>
 #include <vector>
 
-using DFAInput = std::pair<char, char>;
-using DFAOutput = char;
+using DFAInput = std::pair<QString, char>;
+using DFAOutput = QString;
 using DFATransitions = std::map<DFAInput, DFAOutput>;
 
 class DFA : public FiniteAutomaton
 {
 public:
-	DFA(QPointF& screenPos);
+	DFA() = default;
 
 	// Class own methods
-	void AddTransition(char& inputState, char& symbol, char& outputState);
-	void RemoveTransition(char& inputState, char symbol);
+	void AddTransition(QString& inputState, char& symbol, QString& outputState);
+	void RemoveTransition(QString& inputState, char symbol);
 
 	// IFiniteAutomaton inherited methods
 	bool CheckWord(const QString& word) const override;
