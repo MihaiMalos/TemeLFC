@@ -22,6 +22,7 @@ public:
 	void RemoveTransitionsOfState(const QString& state);
 	std::vector<std::vector<QString>> GetTransitions() const;
 	void ModifyTransition(QString transition, int index);
+	void Clear();
 
 private:
 	std::vector<QString> m_transitions;

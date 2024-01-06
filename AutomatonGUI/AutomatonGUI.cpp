@@ -6,6 +6,7 @@
 #include <QGridLayout>
 #include <QLineEdit>
 #include <QPushButton>
+#include <QFileDialog>
 
 #include "AutomatonGUI.h"
 #include "DFA.h"
@@ -156,12 +157,12 @@ void AutomatonGUI::paintEvent(QPaintEvent* event)
             bigCircle.moveCenter(smallCircle.center());
             painter.drawEllipse(bigCircle);
 
-            if (m_automaton->IsFirstState(state))
+            if (m_automaton->IsStartState(state))
             {
                 // code to be added
             }
         }
-        else if (m_automaton->IsFirstState(state))
+        else if (m_automaton->IsStartState(state))
         {
             // code to be added
         }
@@ -267,6 +268,18 @@ void AutomatonGUI::on_checkWord_clicked()
 		break;
 	}
     }
+}
+
+void AutomatonGUI::on_save_clicked()
+{
+    QString filePath = QFileDialog::getSaveFileName(nullptr, "Save File", "", "Text Files (*.txt)");
+    m_automaton->SaveAutomaton(filePath);
+}
+
+void AutomatonGUI::on_load_clicked()
+{
+    QString filePath = QFileDialog::getOpenFileName(nullptr, "Load File", "", "Text Files (*.txt)");
+    m_automaton->LoadAutomaton(filePath);
 }
 
 QString AutomatonGUI::GetCurrentStateNotation()

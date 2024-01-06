@@ -1,0 +1,9 @@
+States:
+q0 249 255 
+q1 434 231 
+q2 263 396 
+q3 141 325 
+Transitions:
+q0 z q1 
+q3 a b c q0 
+q0 a a a q2 

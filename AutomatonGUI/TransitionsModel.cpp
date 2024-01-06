@@ -77,3 +77,8 @@ void TransitionsModel::ModifyTransition(QString transition, int index)
 	m_transitions[index] = transition;
 }
 
+void TransitionsModel::Clear()
+{
+	m_transitions.clear();
+}
+

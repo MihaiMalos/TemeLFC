@@ -1,4 +1,6 @@
 #include "Automaton.h"
+#include <QFile>
+#include <QTextStream>
 
 Automaton::Automaton()
 	: m_startState("")
@@ -16,12 +18,12 @@ bool Automaton::IsFinalState(const QString& state) const
 	return m_finalStates.find(state) != m_finalStates.end();
 }
 
-bool Automaton::IsFirstState(const QString& state) const
+bool Automaton::IsStartState(const QString& state) const
 {
 	return m_startState == state;
 }
 
-std::vector<std::vector<QString>> Automaton::GetTransitions()
+std::vector<std::vector<QString>> Automaton::GetTransitions() const
 {
 	return m_transitionsModel.GetTransitions();
 }
@@ -60,6 +62,15 @@ AutomatonType Automaton::GetAutomatonType()
 	return m_transitionsModel.GetAutomatonType();
 }
 
+void Automaton::Clear()
+{
+	m_transitionsModel.Clear();
+	m_states.clear();
+	m_statesPositions.clear();
+	m_finalStates.clear();
+	m_startState = "";
+}
+
 void Automaton::RemoveState(const QString& state)
 {
 	m_states.erase(state);
@@ -74,12 +85,56 @@ void Automaton::RemoveFinalState(const QString& state)
 	m_finalStates.erase(state);
 }
 
-bool Automaton::SaveAutomaton(const QString& fileName) const
+void Automaton::SaveAutomaton(const QString& filePath) const
 {
-	return false;
+	QFile file(filePath);
+	file.open(QIODevice::WriteOnly | QIODevice::Text);
+	QTextStream out(&file);
+	out << "States:\n";
+	for (auto state : m_statesPositions)
+	{
+		const auto& [stateString, pos] = state;
+		out << stateString << " " << pos.x() << " " << pos.y() << " ";
+		if (IsStartState(stateString)) out << "S ";
+		if (IsFinalState(stateString)) out << "F ";
+		out << "\n";
+	}
+	
+	out << "Transitions:\n";
+
+	for (const auto& transition : GetTransitions())
+	{
+		for (auto element : transition)
+		{
+			out << element << " ";
+		}
+		out << "\n";
+	}
+
 }
 
-bool Automaton::LoadAutomaton(const QString& fileName)
+void Automaton::LoadAutomaton(const QString& filePath)
 {
-	return false;
+	Clear();
+	QFile file(filePath);
+	file.open(QIODevice::ReadOnly | QIODevice::Text);
+	QTextStream in(&file);
+	QString line;
+	line = in.readLine();
+	while ((line = in.readLine()) != "Transitions:")
+	{
+		QStringList words = line.split(" ", Qt::SkipEmptyParts);
+		AddState(words[0], QPointF(words[1].toFloat(), words[2].toFloat()));
+		if (words.size() == 4) words[3] == "F" ? MakeStateFinal(words[0]) : MakeStateStart(words[0]);
+		if (words.size() == 5)
+		{
+			MakeStateStart(words[0]);
+			MakeStateFinal(words[0]);
+		}
+	}
+
+	while (!(line = in.readLine()).isNull())
+	{
+		AddModelTransition(line);
+	}
 }
