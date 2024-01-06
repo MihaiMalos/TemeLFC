@@ -12,9 +12,11 @@ void DFA::AddTransition(QString inputState, char symbol, QString outputState)
 	m_transitions.insert({ {inputState, symbol}, outputState });
 }
 
-bool DFA::CheckWord(const QString& word) const
+CheckWordOutput DFA::CheckWord(const QString& word) const
 {
+	std::vector<std::vector<QString>> checkWordOutput;
 	QString currentState = m_startState;
+	checkWordOutput.push_back({ currentState });
 
 	for (const auto& symbol : word)
 	{
@@ -22,16 +24,17 @@ bool DFA::CheckWord(const QString& word) const
 		if (state != m_transitions.end())
 		{
 			currentState = state->second;
+			checkWordOutput.push_back({ currentState });
 		}
-		else return false;
+		else return { checkWordOutput, false };
 	}
 
 	for (const auto& finalState : m_finalStates)
 	{
 		if (currentState == finalState)
-			return true;
+			return { checkWordOutput, true };
 	}
 
-	return false;
+	return { checkWordOutput, false };
 }
 

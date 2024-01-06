@@ -13,8 +13,9 @@ void NFA::AddTransition(QString& inputState, char symbol, QString& outputState)
 	m_transitions[{inputState, symbol}].push_back(outputState);
 }
 
-bool NFA::CheckWord(const QString& word) const
+CheckWordOutput NFA::CheckWord(const QString& word) const
 {
+	std::vector<std::vector<QString>> checkWordOutput;
 	std::set<QString> currentStateSet;
 	currentStateSet.insert(m_startState);
 
@@ -34,12 +35,16 @@ bool NFA::CheckWord(const QString& word) const
 			}
 		}
 		currentStateSet = nextStateSet;
+
+		std::vector<QString> currentStateVector;
+		currentStateVector.insert(currentStateVector.end(), currentStateSet.begin(), currentStateSet.end());
+		checkWordOutput.push_back(currentStateVector);
 	}
 
 	for (const auto& finalState : m_finalStates)
 	{
 		if (currentStateSet.find(finalState) != currentStateSet.end())
-			return true;
+			return { checkWordOutput, true };
 	}
-	return false;
+	return {checkWordOutput, false };
 }

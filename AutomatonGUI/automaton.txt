@@ -1,9 +1,7 @@
 States:
-q0 249 255 
-q1 434 231 
-q2 263 396 
-q3 141 325 
+q0 419 274 S F 
+q1 585 305 
 Transitions:
-q0 z q1 
-q3 a b c q0 
-q0 a a a q2 
+q0 a q1 
+q1 - q1 
+q1 b q0 

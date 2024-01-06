@@ -15,7 +15,7 @@ public:
 	DFA(const Automaton& automaton);
 
 	void AddTransition(QString inputState, char symbol, QString outputState);
-	bool CheckWord(const QString& word) const;
+	CheckWordOutput CheckWord(const QString& word) const;
 
 
 private:

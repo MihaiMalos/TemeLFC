@@ -13,7 +13,7 @@ public:
 	PDA(const Automaton& automaton);
 
 	void AddTransition(QString& inputState, char symbol, char stackHead, QString& headReplacement, QString& outputState);
-	bool CheckWord(const QString& word);
+	CheckWordOutput CheckWord(const QString& word);
 private:
 	PDATransitions m_transitions;
 	const char m_startStack = '$';

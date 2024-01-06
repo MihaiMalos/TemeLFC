@@ -16,7 +16,7 @@ public:
 
 	// Class own methods
 	void AddTransition(QString& inputState, char symbol, QString& outputState);
-	virtual bool CheckWord(const QString& word) const;
+	virtual CheckWordOutput CheckWord(const QString& word) const;
 
 protected:
 	NFATransitions m_transitions;

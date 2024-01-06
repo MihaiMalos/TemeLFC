@@ -7,6 +7,6 @@ public:
 	LambdaNFA() = default;
 	LambdaNFA(const Automaton& automaton);
 
-	bool CheckWord(const QString& word) const override;
+	CheckWordOutput CheckWord(const QString& word) const override;
 };
 

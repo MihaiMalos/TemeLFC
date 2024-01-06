@@ -22,6 +22,8 @@ private slots:
     void on_checkWord_clicked();
     void on_save_clicked();
     void on_load_clicked();
+    void on_clear_clicked();
+    void on_loadWords_clicked();
 
 
 private:
@@ -33,8 +35,10 @@ private:
 
 private:
     const int kCircleRadius = 20;
+    const float kAnimationStepTime = 1.5;
     int m_stateCounter = 0;
-    QString m_selectedState, m_selectedTransition, m_selectedWord;
+    QString m_selectedState, m_selectedTransition, m_selectedWord, m_animationOutput;
+    std::vector<QString> m_animationStates;
     QDialog* m_transitionDialog, *m_checkWordDialog;
     std::shared_ptr<Automaton> m_automaton;
     Ui::AutomatonGUIClass ui;

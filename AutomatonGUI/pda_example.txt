@@ -1,0 +1,10 @@
+States:
+q0 210 193 S 
+q1 351 150 
+q2 462 257 F 
+Transitions:
+q0 a $ A$ q0 
+q0 a A AA q0 
+q0 b A - q1 
+q1 b A - q1 
+q1 - $ $ q2 

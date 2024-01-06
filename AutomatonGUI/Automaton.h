@@ -8,6 +8,7 @@
 #include "TransitionsModel.h"
 
 using StatesPositionsList = std::map<QString, QPointF>;
+using CheckWordOutput = std::pair<std::vector<std::vector<QString>>, bool>;
 
 class Automaton
 {

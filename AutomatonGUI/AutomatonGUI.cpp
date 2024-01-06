@@ -7,6 +7,7 @@
 #include <QLineEdit>
 #include <QPushButton>
 #include <QFileDialog>
+#include <QThread>
 
 #include "AutomatonGUI.h"
 #include "DFA.h"
@@ -140,11 +141,26 @@ void AutomatonGUI::paintEvent(QPaintEvent* event)
     painter.setRenderHint(QPainter::Antialiasing, true);
     painter.setFont(font);
 
+    font.setPixelSize(20);
+    painter.setFont(font);
+    painter.drawText(QPointF{ 225, 40 }, m_animationOutput);
+    font.setPixelSize(13);
+    painter.setFont(font);
+
     auto automatonStates = m_automaton->GetStatesPositions();
     for (const auto& [state, position] : automatonStates)
     {
         if (m_selectedState == state) pen.setColor(Qt::red);
         else pen.setColor(Qt::black);
+
+        for (auto animationState : m_animationStates)
+        {
+            if (state == animationState)
+            {
+                pen.setColor(Qt::blue);
+                break;
+            }
+        }
         painter.setPen(pen);
 
         QRectF smallCircle(position.x() - kCircleRadius, position.y() - kCircleRadius, 2 * kCircleRadius, 2 * kCircleRadius);
@@ -237,7 +253,9 @@ void AutomatonGUI::paintEvent(QPaintEvent* event)
 
 void AutomatonGUI::on_checkWord_clicked()
 {
+    m_selectedState = "";
     m_checkWordDialog->exec();
+    CheckWordOutput output;
     switch (m_automaton->GetAutomatonType())
     {
 	case AutomatonType::DFA:
@@ -247,7 +265,7 @@ void AutomatonGUI::on_checkWord_clicked()
 		{
 			dfa->AddTransition(transition[0], transition[1].at(0).toLatin1(), transition[2]);
 		}
-		qDebug() << dfa->CheckWord(m_selectedWord);
+		output = dfa->CheckWord(m_selectedWord);
 		break;
 	}
 	case AutomatonType::NFA:
@@ -257,7 +275,7 @@ void AutomatonGUI::on_checkWord_clicked()
 		{
 			nfa->AddTransition(transition[0], transition[1].at(0).toLatin1(), transition[2]);
 		}
-		qDebug() << nfa->CheckWord(m_selectedWord);
+        output = nfa->CheckWord(m_selectedWord);
 		break;
 	}
 	case AutomatonType::LambdaNFA:
@@ -267,7 +285,7 @@ void AutomatonGUI::on_checkWord_clicked()
 		{
 			lambdaNFA->AddTransition(transition[0], transition[1].at(0).toLatin1(), transition[2]);
 		}
-		qDebug() << lambdaNFA->CheckWord(m_selectedWord);
+        output = lambdaNFA->CheckWord(m_selectedWord);
 		break;
 	}
 	case AutomatonType::PDA:
@@ -277,15 +295,29 @@ void AutomatonGUI::on_checkWord_clicked()
 		{
 			pda->AddTransition(transition[0], transition[1].at(0).toLatin1(), transition[2].at(0).toLatin1(), transition[3], transition[4]);
 		}
-		qDebug() << pda->CheckWord(m_selectedWord);
+        output = pda->CheckWord(m_selectedWord);
 		break;
 	}
 	case AutomatonType::None:
 	{
-		qDebug() << "automaton is not valid";
+        output = { {}, false };
+        qDebug() << "Not a valid automaton type";
 		break;
 	}
     }
+
+    int index = 0;
+    for (const auto& states : output.first)
+    {
+        m_animationStates = states;
+        m_animationOutput = m_selectedWord.left(index++);
+        repaint();
+        QThread::sleep(kAnimationStepTime);
+    }
+    m_animationStates = {};
+    m_animationOutput = output.second ? "Word is accepted" : "Word is NOT accepted";
+    repaint();
+
 }
 
 void AutomatonGUI::on_save_clicked()
@@ -298,6 +330,19 @@ void AutomatonGUI::on_load_clicked()
 {
     QString filePath = QFileDialog::getOpenFileName(nullptr, "Load File", "", "Text Files (*.txt)");
     m_automaton->LoadAutomaton(filePath);
+}
+
+void AutomatonGUI::on_clear_clicked()
+{
+    m_automaton->Clear();
+    m_stateCounter = 0;
+    m_selectedState = m_selectedTransition = m_selectedWord = m_animationOutput = "";
+    update();
+}
+
+void AutomatonGUI::on_loadWords_clicked()
+{
+    QString filePath = QFileDialog::getOpenFileName(nullptr, "Load File", "", "Text Files (*.txt)");
 }
 
 QString AutomatonGUI::GetCurrentStateNotation()
@@ -344,7 +389,7 @@ void AutomatonGUI::InitCheckWordDialog()
 	QGridLayout* layout = new QGridLayout();
 
 	QLineEdit* lineEdit = new QLineEdit(m_checkWordDialog);
-	QPushButton* okButton = new QPushButton("Confirm", m_checkWordDialog);
+	QPushButton* okButton = new QPushButton("Check word", m_checkWordDialog);
 
 	layout->addWidget(lineEdit);
 	layout->addWidget(okButton);

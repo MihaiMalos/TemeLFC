@@ -10,8 +10,9 @@ void PDA::AddTransition(QString& inputState, char symbol, char stackHead, QStrin
 	m_transitions[{inputState, symbol, stackHead}].push_back({ headReplacement, outputState });
 }
 
-bool PDA::CheckWord(const QString& word)
+CheckWordOutput PDA::CheckWord(const QString& word)
 {
+	std::vector<std::vector<QString>> checkWordOutput;
 	std::vector<QString> currentStateList;
 	std::vector<std::stack<char>> currentStackList;
 	currentStateList.push_back(m_startState);
@@ -69,6 +70,9 @@ bool PDA::CheckWord(const QString& word)
 				}
 			}
 		}
+
+		checkWordOutput.push_back(currentStateList);
+
 		currentStateList = nextStateList;
 		currentStackList = nextStackList;
 	}
@@ -81,9 +85,9 @@ bool PDA::CheckWord(const QString& word)
 			const auto& currentStack = currentStackList[index];
 			if (currentStack.size() == 1 && currentStack.top() == m_startStack && currentState == finalState)
 			{
-				return true;
+				return { checkWordOutput, true };
 			}
 		}
 	}
-	return false;
+	return { checkWordOutput, false };
 }
