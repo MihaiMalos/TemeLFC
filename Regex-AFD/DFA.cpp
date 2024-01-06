@@ -2,9 +2,9 @@
 
 bool DFA::VerifyWord(std::string word)
 {
-	if (word.find(&lambda) != std::string::npos && word.size() > 1) return false;
+	if (word.find(&m_lambda) != std::string::npos && word.size() > 1) return false;
 
-	char currentState = m_firstState;
+	char currentState = m_startState;
 
 	for (const char& symbol : word)
 	{
@@ -26,55 +26,6 @@ bool DFA::VerifyWord(std::string word)
 }
 
 
-bool DFA::VerifyAutomaton()
-{
-	if (VerifyCharacters() == true && VerifyFinalStates() == true && VerifyStartState() == true && VerifyTransitionFunctions() == true)
-		return true;
-	else return false;
-
-}
-
-bool DFA::VerifyCharacters()
-{
-	for (const char& it : m_alphabet)
-		if (m_states.find(it) != m_states.end())
-		{
-			return false;
-		}
-	return true;
-}
-bool DFA::VerifyStartState()
-{
-	if (m_states.find(m_firstState) == m_states.end())
-		return false;
-
-	return true;
-}
-bool DFA::VerifyFinalStates()
-{
-	for (const char& it : m_finalStates)
-	{
-		if (m_states.find(it) == m_states.end())
-			return false;
-	}
-
-
-	return true;
-}
-bool DFA::VerifyTransitionFunctions()
-{
-	for (const auto& it : m_transitions)
-	{
-		if (std::find(m_states.begin(), m_states.end(), it.first.first) == m_states.end())
-			return false;
-		if (std::find(m_alphabet.begin(), m_alphabet.end(), it.first.second) == m_alphabet.end())
-			return false;
-		if (std::find(m_states.begin(), m_states.end(), it.second) == m_states.end())
-			return false;
-
-	}
-	return true;
-}
 
 std::ostream& operator<<(std::ostream& out, const DFA& automaton)
 {
@@ -96,7 +47,7 @@ std::ostream& operator<<(std::ostream& out, const DFA& automaton)
 	}
 	out << "},";
 
-	out << "delta," << automaton.m_firstState << ",";
+	out << "delta," << automaton.m_startState << ",";
 
 	out << "{";
 	for (auto it : automaton.m_finalStates)

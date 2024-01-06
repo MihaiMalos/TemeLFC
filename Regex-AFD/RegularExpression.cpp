@@ -101,7 +101,7 @@ NFA RegularExpression::ConvertToAutomaton()
 	}
 	return automata.top();
 }
-const uint16_t& RegularExpression::GetRank(const char& op) const
+const uint8_t& RegularExpression::GetRank(const char& op) const
 {
 	switch (op)
 	{
@@ -169,7 +169,7 @@ void RegularExpression::ReduceStars()
 std::string RegularExpression::AddConcatenation(const std::string& expression) const
 {
 	std::string modifiedExpression{ expression };
-	for (size_t index{0}; index < modifiedExpression.size() - 1; ++index)
+	for (uint16_t index{0}; index < modifiedExpression.size() - 1; ++index)
 	{
 		std::string symbols("|(");
 		symbols += '.';

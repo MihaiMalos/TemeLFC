@@ -1,10 +1,6 @@
 #pragma once
-#include <iostream>
 #include <regex>
 #include <stack>
-#include <string>
-
-#include "DFA.h"
 #include "NFA.h"
 
 
@@ -16,7 +12,7 @@ public:
 
 	bool IsValid();
 	NFA ConvertToAutomaton();
-	const uint16_t& GetRank(const char& op) const;
+	const uint8_t& GetRank(const char& op) const;
 	
 	void ReduceStars();
 	std::string AddConcatenation(const std::string& expression) const;
