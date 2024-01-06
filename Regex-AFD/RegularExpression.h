@@ -19,8 +19,6 @@ public:
 
 private:
 	std::string m_expression;
-
-private:
 	std::string BuildPolishForm();
 
 public:

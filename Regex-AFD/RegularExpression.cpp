@@ -8,7 +8,7 @@ bool RegularExpression::IsValid()
 	size_t size{ m_expression.size() };
 	std::stack<char> parentheses;
 
-	for (size_t index{ 0 }; index < size; ++index)
+	for (uint16_t index{ 0 }; index < size; ++index)
 	{
 		if (m_expression[index] == '(')
 		{
@@ -64,7 +64,11 @@ NFA RegularExpression::ConvertToAutomaton()
 	std::stack<NFA> automata;
 	for (char symbol : polishNotation)
 	{
-		if (GetRank(symbol) != -1)
+		if (GetRank(symbol) == -1)
+		{
+			automata.push(NFA::FromChar(symbol));
+		}
+		else
 		{
 			switch (symbol)
 			{
@@ -99,7 +103,7 @@ NFA RegularExpression::ConvertToAutomaton()
 			}
 		}
 	}
-	return automata.top();
+	return std::move(automata.top());
 }
 const uint8_t& RegularExpression::GetRank(const char& op) const
 {
