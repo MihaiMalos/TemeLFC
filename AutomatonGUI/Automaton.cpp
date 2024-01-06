@@ -1,5 +1,11 @@
 #include "Automaton.h"
 
+Automaton::Automaton()
+	: m_startState("")
+{
+	// Empty
+}
+
 StatesPositionsList Automaton::GetStatesPositions() const
 {
 	return m_statesPositions;

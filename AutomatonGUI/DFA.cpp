@@ -1,34 +1,37 @@
 #include "DFA.h"
 #include <QDebug>
 
-void DFA::RemoveState(const QString& state)
+DFA::DFA(const Automaton& automaton)
+	: Automaton(automaton)
 {
-	Automaton::RemoveState(state);
-	for (auto it = m_transitions.begin(); it != m_transitions.end();)
-	{
-		const auto& [input, outputState] = *it;
-		const auto& [inputState, symbol] = input;
-
-		if (inputState == state || outputState == state)
-		{
-			it = m_transitions.erase(it);
-		}
-		else ++it;
-	}
+	// Empty
 }
 
-void DFA::AddTransition(QString& inputState, char& symbol, QString& outputState)
+void DFA::AddTransition(QString inputState, char symbol, QString outputState)
 {
-	m_transitions[{inputState, symbol}] = outputState;
-}
-
-void DFA::RemoveTransition(QString& inputState, char symbol)
-{
-	m_transitions.erase({ inputState, symbol });
+	m_transitions.insert({ {inputState, symbol}, outputState });
 }
 
 bool DFA::CheckWord(const QString& word) const
 {
+	QString currentState = m_startState;
+
+	for (const auto& symbol : word)
+	{
+		auto state = m_transitions.find({ currentState, symbol.toLatin1()});
+		if (state != m_transitions.end())
+		{
+			currentState = state->second;
+		}
+		else return false;
+	}
+
+	for (const auto& finalState : m_finalStates)
+	{
+		if (currentState == finalState)
+			return true;
+	}
+
 	return false;
 }
 

@@ -12,14 +12,13 @@ class NFA : public Automaton
 {
 public:
 	NFA() = default;
+	NFA(const Automaton& automaton);
 
 	// Class own methods
-	void AddTransition(QString& inputState, char& symbol, QString& outputState);
-	void RemoveTransition(QString& inputState, char symbol, QString& outputState);
+	void AddTransition(QString& inputState, char symbol, QString& outputState);
+	virtual bool CheckWord(const QString& word) const;
 
-	bool CheckWord(const QString& word) const;
-
-private:
+protected:
 	NFATransitions m_transitions;
 
 };

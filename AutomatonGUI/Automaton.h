@@ -12,7 +12,7 @@ using StatesPositionsList = std::map<QString, QPointF>;
 class Automaton
 {
 public:
-	Automaton() = default;
+	Automaton();
 	virtual ~Automaton() = default;
 
 	StatesPositionsList GetStatesPositions() const;

@@ -12,12 +12,9 @@ class DFA : public Automaton
 {
 public:
 	DFA() = default;
+	DFA(const Automaton& automaton);
 
-	void RemoveState(const QString& state) override;
-
-	void AddTransition(QString& inputState, char& symbol, QString& outputState);
-	void RemoveTransition(QString& inputState, char symbol);
-
+	void AddTransition(QString inputState, char symbol, QString outputState);
 	bool CheckWord(const QString& word) const;
 
 

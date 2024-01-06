@@ -48,6 +48,12 @@
     <ClCompile Include="TransitionsModel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="LambdaNFA.cpp">
+      <Filter>Automatons</Filter>
+    </ClCompile>
+    <ClCompile Include="PDA.cpp">
+      <Filter>Automatons</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Automaton.h">
@@ -61,6 +67,12 @@
     </ClInclude>
     <ClInclude Include="TransitionsModel.h">
       <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="LambdaNFA.h">
+      <Filter>Automatons</Filter>
+    </ClInclude>
+    <ClInclude Include="PDA.h">
+      <Filter>Automatons</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

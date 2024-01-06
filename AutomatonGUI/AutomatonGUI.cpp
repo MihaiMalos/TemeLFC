@@ -10,13 +10,17 @@
 #include "AutomatonGUI.h"
 #include "DFA.h"
 #include "NFA.h"
+#include "LambdaNFA.h"
+#include "PDA.h"
 
 
 AutomatonGUI::AutomatonGUI(QWidget *parent)
     : QMainWindow(parent)
     , m_automaton{std::make_shared<Automaton>()}
 {
+    ui.setupUi(this);
     InitTransitionDialog();
+    InitCheckWordDialog();
     resize(1000, 600);
 }
 
@@ -66,7 +70,6 @@ void AutomatonGUI::mousePressEvent(QMouseEvent* event)
                 if (!m_selectedTransition.isEmpty())
                 {
                     m_automaton->AddModelTransition(m_selectedState + " " + m_selectedTransition + " " + toSelect);
-                    qDebug() << (int) m_automaton->GetAutomatonType();
                 }
                 m_selectedState = "";
                 m_selectedTransition = "";
@@ -213,6 +216,59 @@ void AutomatonGUI::paintEvent(QPaintEvent* event)
     }
 }
 
+void AutomatonGUI::on_checkWord_clicked()
+{
+    m_checkWordDialog->exec();
+    switch (m_automaton->GetAutomatonType())
+    {
+	case AutomatonType::DFA:
+	{
+		std::shared_ptr<DFA> dfa = std::make_shared<DFA>(*m_automaton.get());
+		for (auto transition : dfa->GetTransitions())
+		{
+			dfa->AddTransition(transition[0], transition[1].at(0).toLatin1(), transition[2]);
+		}
+		qDebug() << dfa->CheckWord(m_selectedWord);
+		break;
+	}
+	case AutomatonType::NFA:
+    {	
+        std::shared_ptr<NFA> nfa = std::make_shared<NFA>(*m_automaton.get());
+		for (auto transition : nfa->GetTransitions())
+		{
+			nfa->AddTransition(transition[0], transition[1].at(0).toLatin1(), transition[2]);
+		}
+		qDebug() << nfa->CheckWord(m_selectedWord);
+		break;
+	}
+	case AutomatonType::LambdaNFA:
+	{
+		std::shared_ptr<LambdaNFA> lambdaNFA = std::make_shared<LambdaNFA>(*m_automaton.get());
+		for (auto transition : lambdaNFA->GetTransitions())
+		{
+			lambdaNFA->AddTransition(transition[0], transition[1].at(0).toLatin1(), transition[2]);
+		}
+		qDebug() << lambdaNFA->CheckWord(m_selectedWord);
+		break;
+	}
+	case AutomatonType::PDA:
+	{
+		std::shared_ptr<PDA> pda = std::make_shared<PDA>(*m_automaton.get());
+		for (auto transition : pda->GetTransitions())
+		{
+			pda->AddTransition(transition[0], transition[1].at(0).toLatin1(), transition[2].at(0).toLatin1(), transition[3], transition[4]);
+		}
+		qDebug() << pda->CheckWord(m_selectedWord);
+		break;
+	}
+	case AutomatonType::None:
+	{
+		qDebug() << "automaton is not valid";
+		break;
+	}
+    }
+}
+
 QString AutomatonGUI::GetCurrentStateNotation()
 {
     return "q" + QString::number(m_stateCounter++);
@@ -248,5 +304,24 @@ void AutomatonGUI::InitTransitionDialog()
 		m_selectedTransition = lineEdit->displayText();
 		lineEdit->setText("");
 		m_transitionDialog->close();
+		});
+}
+
+void AutomatonGUI::InitCheckWordDialog()
+{
+	m_checkWordDialog = new QDialog();
+	QGridLayout* layout = new QGridLayout();
+
+	QLineEdit* lineEdit = new QLineEdit(m_checkWordDialog);
+	QPushButton* okButton = new QPushButton("Confirm", m_checkWordDialog);
+
+	layout->addWidget(lineEdit);
+	layout->addWidget(okButton);
+	m_checkWordDialog->setLayout(layout);
+
+	connect(okButton, &QPushButton::clicked, [=]() {
+		m_selectedWord = lineEdit->displayText();
+		lineEdit->setText("");
+		m_checkWordDialog->close();
 		});
 }

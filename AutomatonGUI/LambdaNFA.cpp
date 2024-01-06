@@ -1,19 +1,11 @@
-#include "NFA.h"
+#include "LambdaNFA.h"
 
-#include <algorithm>
-
-NFA::NFA(const Automaton& automaton)
-	: Automaton(automaton)
+LambdaNFA::LambdaNFA(const Automaton& automaton) : NFA(automaton)
 {
 	// Empty
 }
 
-void NFA::AddTransition(QString& inputState, char symbol, QString& outputState)
-{
-	m_transitions[{inputState, symbol}].push_back(outputState);
-}
-
-bool NFA::CheckWord(const QString& word) const
+bool LambdaNFA::CheckWord(const QString& word) const
 {
 	std::set<QString> currentStateSet;
 	currentStateSet.insert(m_startState);
@@ -25,11 +17,21 @@ bool NFA::CheckWord(const QString& word) const
 		for (const auto& state : currentStateSet)
 		{
 			auto stateRange = m_transitions.find({ state, symbol.toLatin1() });
+
 			if (stateRange != m_transitions.end())
 			{
-				for (auto outputState : stateRange->second)
+				for (auto& outputState : stateRange->second)
 				{
 					nextStateSet.insert(outputState);
+
+					auto lambdaStateRange = m_transitions.find({ outputState, m_lambda });
+					if (lambdaStateRange != m_transitions.end())
+					{
+						for (auto& lambdaState : lambdaStateRange->second)
+						{
+							nextStateSet.insert(lambdaState);
+						}
+					}
 				}
 			}
 		}
