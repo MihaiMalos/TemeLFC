@@ -188,10 +188,28 @@ void AutomatonGUI::paintEvent(QPaintEvent* event)
             const auto endPoint = secondStatePos - centerToBorderOffset;
 
             QPointF controlPoint(startPoint.x() + (endPoint.x() - startPoint.x()) / 2.0f, startPoint.y() - (endPoint.y() - startPoint.y()) / 2.0f);
+			QPointF textPoint;
+			if (std::abs(startPoint.y() - endPoint.y()) < 100)
+				textPoint = controlPoint;
+            else
+                if(std::abs(startPoint.x() - endPoint.x()) <=30)
+				{
+					if (startPoint.x() < endPoint.x())
+						textPoint = { std::abs(startPoint.x() - endPoint.x())*2,controlPoint.y() };
+                    else
+                        textPoint = { std::abs(startPoint.x() - endPoint.x())*2,controlPoint.y() };
+				}
+                else
+            if(startPoint.y() < endPoint.y())
+                textPoint = { controlPoint.x(), std::abs(startPoint.y() - endPoint.y())};
+			else
+                textPoint = { controlPoint.x(), std::abs(startPoint.y() - endPoint.y()) * 2 };
+
             QPainterPath path;
             path.moveTo(startPoint);
             path.quadTo(controlPoint, endPoint);
             painter.drawPath(path);
+            painter.drawText(textPoint, "Text");
 
 			static const int arrowOffset = 30;
 			double angle = atan(CalculateSlope(controlPoint, secondStatePos)) * 180 / 3.14;
