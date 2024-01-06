@@ -151,7 +151,9 @@ void AutomatonGUI::paintEvent(QPaintEvent* event)
     for (const auto& [state, position] : automatonStates)
     {
         if (m_selectedState == state) pen.setColor(Qt::red);
+        else if (m_automaton->IsStartState(state)) pen.setColor(Qt::darkGreen);
         else pen.setColor(Qt::black);
+        
 
         for (auto animationState : m_animationStates)
         {
