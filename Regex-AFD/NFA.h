@@ -1,5 +1,4 @@
 #pragma once
-#pragma once
 #include "DFA.h"
 #include <unordered_set>
 
@@ -12,8 +11,10 @@ public:
 	NFA(const std::vector<uint16_t>& states = {}, const std::vector<char>& alphabet = {}, const TransitionsNFA& transition = TransitionsNFA(), uint16_t startState = 0, const std::vector<uint16_t>& finalStates = {});
 
 	NFA op_or(const NFA& other) const;
-	NFA op_concat(NFA other) const;
-	NFA op_kleene() const;
+	NFA op_concat(NFA& other) const;
+	NFA op_kleene();
+
+	static NFA FromChar(char c);
 
 	//State generation
 	static uint16_t stateCounter;
