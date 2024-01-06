@@ -99,8 +99,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="FiniteAutomaton.cpp" />
+    <ClCompile Include="Automaton.cpp" />
     <ClCompile Include="NFA.cpp" />
+    <ClCompile Include="TransitionsModel.cpp" />
     <QtRcc Include="AutomatonGUI.qrc" />
     <QtUic Include="AutomatonGUI.ui" />
     <QtMoc Include="AutomatonGUI.h" />
@@ -109,9 +110,10 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="FiniteAutomaton.h" />
+    <ClInclude Include="Automaton.h" />
     <ClInclude Include="DFA.h" />
     <ClInclude Include="NFA.h" />
+    <ClInclude Include="TransitionsModel.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">

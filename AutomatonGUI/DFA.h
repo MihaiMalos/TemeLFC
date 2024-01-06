@@ -1,27 +1,25 @@
 #pragma once
 
-#include "FiniteAutomaton.h"
+#include "Automaton.h"
 #include <tuple>
 #include <map>
 #include <vector>
 
 using DFAInput = std::pair<QString, char>;
-using DFAOutput = QString;
-using DFATransitions = std::map<DFAInput, DFAOutput>;
+using DFATransitions = std::map<DFAInput, QString>;
 
-class DFA : public FiniteAutomaton
+class DFA : public Automaton
 {
 public:
 	DFA() = default;
 
-	// Class own methods
+	void RemoveState(const QString& state) override;
+
 	void AddTransition(QString& inputState, char& symbol, QString& outputState);
 	void RemoveTransition(QString& inputState, char symbol);
 
-	// IFiniteAutomaton inherited methods
-	bool CheckWord(const QString& word) const override;
-	bool SaveAutomaton(const QString& fileName) const override;
-	bool LoadAutomaton(const QString& fileName) override;
+	bool CheckWord(const QString& word) const;
+
 
 private:
 	DFATransitions m_transitions;

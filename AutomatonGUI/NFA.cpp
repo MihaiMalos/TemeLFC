@@ -20,13 +20,3 @@ bool NFA::CheckWord(const QString& word) const
 {
 	return false;
 }
-
-bool NFA::SaveAutomaton(const QString& fileName) const
-{
-	return false;
-}
-
-bool NFA::LoadAutomaton(const QString& fileName)
-{
-	return false;
-}

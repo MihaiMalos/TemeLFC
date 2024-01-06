@@ -1,7 +1,7 @@
 #pragma once
 
 #include <QtWidgets/QMainWindow>
-#include "FiniteAutomaton.h"
+#include "Automaton.h"
 
 class AutomatonGUI : public QMainWindow
 {
@@ -12,17 +12,22 @@ public:
     ~AutomatonGUI();
 
 protected:
-	virtual void mousePressEvent(QMouseEvent* event);
-    virtual void mouseMoveEvent(QMouseEvent* event);
+	virtual void mousePressEvent(QMouseEvent* event) override;
+    virtual void mouseMoveEvent(QMouseEvent* event) override;
+    virtual void keyPressEvent(QKeyEvent* event) override;
 	virtual void paintEvent(QPaintEvent* event);
 
 private:
     QString GetCurrentStateNotation();
+	QPointF PointTranslation(QPointF firstPoint, QPointF secondPoint);
+	double CalculateSlope(QPointF firstPoint, QPointF secondPoint);
+    void InitTransitionDialog();
 
 private:
-    const int kNodeRadius = 20;
+    const int kCircleRadius = 20;
     int m_stateCounter = 0;
-
     QString m_selectedState;
-    std::unique_ptr<FiniteAutomaton> m_automaton;
+    QString m_selectedTransition;
+    QDialog* m_transitionDialog;
+    std::shared_ptr<Automaton> m_automaton;
 };

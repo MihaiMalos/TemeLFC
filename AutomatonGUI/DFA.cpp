@@ -1,4 +1,21 @@
 #include "DFA.h"
+#include <QDebug>
+
+void DFA::RemoveState(const QString& state)
+{
+	Automaton::RemoveState(state);
+	for (auto it = m_transitions.begin(); it != m_transitions.end();)
+	{
+		const auto& [input, outputState] = *it;
+		const auto& [inputState, symbol] = input;
+
+		if (inputState == state || outputState == state)
+		{
+			it = m_transitions.erase(it);
+		}
+		else ++it;
+	}
+}
 
 void DFA::AddTransition(QString& inputState, char& symbol, QString& outputState)
 {
@@ -15,12 +32,3 @@ bool DFA::CheckWord(const QString& word) const
 	return false;
 }
 
-bool DFA::SaveAutomaton(const QString& fileName) const
-{
-	return false;
-}
-
-bool DFA::LoadAutomaton(const QString& fileName)
-{
-	return false;
-}

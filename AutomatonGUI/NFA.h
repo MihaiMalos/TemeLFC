@@ -1,15 +1,14 @@
 #pragma once
 
-#include "FiniteAutomaton.h"
+#include "Automaton.h"
 #include <tuple>
 #include <map>
 #include <vector>
 
 using NFAInput = std::pair<QString, char>;
-using NFAOutput = QString;
-using NFATransitions = std::map<NFAInput, std::vector<NFAOutput>>;
+using NFATransitions = std::map<NFAInput, std::vector<QString>>;
 
-class NFA : public FiniteAutomaton
+class NFA : public Automaton
 {
 public:
 	NFA() = default;
@@ -18,12 +17,9 @@ public:
 	void AddTransition(QString& inputState, char& symbol, QString& outputState);
 	void RemoveTransition(QString& inputState, char symbol, QString& outputState);
 
-	// IFiniteAutomaton inherited methods
-	bool CheckWord(const QString& word) const override;
-	bool SaveAutomaton(const QString& fileName) const override;
-	bool LoadAutomaton(const QString& fileName) override;
+	bool CheckWord(const QString& word) const;
 
-private: 
+private:
 	NFATransitions m_transitions;
 
 };
