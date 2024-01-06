@@ -127,11 +127,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="DeterministicFiniteAutomaton.h" />
+    <ClInclude Include="DFA.h" />
     <ClInclude Include="RegularExpression.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="DeterministicFiniteAutomaton.cpp" />
+    <ClCompile Include="DFA.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="RegularExpression.cpp" />
   </ItemGroup>

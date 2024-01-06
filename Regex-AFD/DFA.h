@@ -10,11 +10,11 @@ using Input = std::pair<char, char>;
 using Output = char;
 using Transitions = std::map<Input, Output>;
 
-class DeterministicFiniteAutomaton
+class DFA
 {
 public:
-	DeterministicFiniteAutomaton() = default;
-	~DeterministicFiniteAutomaton() = default;
+	DFA() = default;
+	~DFA() = default;
 	bool VerifyAutomaton();
 	bool VerifyWord(std::string word);
 
@@ -34,7 +34,7 @@ private:
 
 public:
 	friend std::ostream& operator<<(std::ostream& out,
-		const DeterministicFiniteAutomaton& automaton);
+		const DFA& automaton);
 };
 
 

@@ -1,6 +1,6 @@
-#include "DeterministicFiniteAutomaton.h"
+#include "DFA.h"
 
-bool DeterministicFiniteAutomaton::VerifyWord(std::string word)
+bool DFA::VerifyWord(std::string word)
 {
 	if (word.find(&lambda) != std::string::npos && word.size() > 1) return false;
 
@@ -26,7 +26,7 @@ bool DeterministicFiniteAutomaton::VerifyWord(std::string word)
 }
 
 
-bool DeterministicFiniteAutomaton::VerifyAutomaton()
+bool DFA::VerifyAutomaton()
 {
 	if (VerifyCharacters() == true && VerifyFinalStates() == true && VerifyStartState() == true && VerifyTransitionFunctions() == true)
 		return true;
@@ -34,7 +34,7 @@ bool DeterministicFiniteAutomaton::VerifyAutomaton()
 
 }
 
-bool DeterministicFiniteAutomaton::VerifyCharacters()
+bool DFA::VerifyCharacters()
 {
 	for (const char& it : m_alphabet)
 		if (m_states.find(it) != m_states.end())
@@ -43,14 +43,14 @@ bool DeterministicFiniteAutomaton::VerifyCharacters()
 		}
 	return true;
 }
-bool DeterministicFiniteAutomaton::VerifyStartState()
+bool DFA::VerifyStartState()
 {
 	if (m_states.find(m_firstState) == m_states.end())
 		return false;
 
 	return true;
 }
-bool DeterministicFiniteAutomaton::VerifyFinalStates()
+bool DFA::VerifyFinalStates()
 {
 	for (const char& it : m_finalStates)
 	{
@@ -61,7 +61,7 @@ bool DeterministicFiniteAutomaton::VerifyFinalStates()
 
 	return true;
 }
-bool DeterministicFiniteAutomaton::VerifyTransitionFunctions()
+bool DFA::VerifyTransitionFunctions()
 {
 	for (const auto& it : m_transitions)
 	{
@@ -76,7 +76,7 @@ bool DeterministicFiniteAutomaton::VerifyTransitionFunctions()
 	return true;
 }
 
-std::ostream& operator<<(std::ostream& out, const DeterministicFiniteAutomaton& automaton)
+std::ostream& operator<<(std::ostream& out, const DFA& automaton)
 {
 	out << "M = ({";
 	for (auto& it : automaton.m_states)

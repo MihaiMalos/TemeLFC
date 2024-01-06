@@ -1,7 +1,5 @@
 #include "RegularExpression.h"
 
-const char RegularExpression::k_concatenation{ '.' };
-
 bool RegularExpression::IsValid()
 {
 	if (m_expression.empty())
@@ -60,11 +58,49 @@ bool RegularExpression::IsValid()
 	return true;
 }
 
-DeterministicFiniteAutomaton RegularExpression::ConvertToAutomaton()
+NFA RegularExpression::ConvertToAutomaton()
 {
-
+	std::string polishNotation = BuildPolishForm();
+	std::stack<NFA> automata;
+	for (char symbol : polishNotation)
+	{
+		if (GetRank(symbol) != -1)
+		{
+			switch (symbol)
+			{
+			case '|':
+			{
+				NFA secondAutomaton = automata.top();
+				automata.pop();
+				NFA firstAutomaton = automata.top();
+				automata.pop();
+				automata.push(firstAutomaton.op_or(secondAutomaton));
+				break;
+			}
+			case '.':
+			{
+				NFA secondAutomaton = automata.top();
+				automata.pop();
+				NFA firstAutomaton = automata.top();
+				automata.pop();
+				automata.push(firstAutomaton.op_concat(secondAutomaton));
+				break;
+			}
+			case '*':
+			{
+				NFA automaton = automata.top();
+				automata.pop();
+				automata.push(automaton.op_kleene());
+				break;
+			}
+			default:
+				// if the Polish notation is correct, as it should be, there is no need for a default case but still
+				break;
+			}
+		}
+	}
+	return automata.top();
 }
-
 const uint16_t& RegularExpression::GetRank(const char& op) const
 {
 	switch (op)
@@ -73,7 +109,7 @@ const uint16_t& RegularExpression::GetRank(const char& op) const
 		return 0;
 	case '|':
 		return 1;
-	case k_concatenation: // '.'
+	case  '.':
 		return 2;
 	case '*':
 		return 3;
@@ -125,24 +161,42 @@ std::string RegularExpression::BuildPolishForm()
 	return std::move(polishForm);
 }
 
+void RegularExpression::ReduceStars()
+{
+	m_expression = std::regex_replace(m_expression, std::regex("\\*+"), "*");
+}
+
 std::string RegularExpression::AddConcatenation(const std::string& expression) const
 {
 	std::string modifiedExpression{ expression };
 	for (size_t index{0}; index < modifiedExpression.size() - 1; ++index)
 	{
 		std::string symbols("|(");
-		symbols += k_concatenation;
+		symbols += '.';
 		if (symbols.find(modifiedExpression[index]) != std::string::npos)
 		{
 			continue;
 		}
 		symbols = "|*)";
-		symbols += k_concatenation;
+		symbols += '.';
 		if (symbols.find(modifiedExpression[index + 1]) != std::string::npos)
 		{
 			continue;
 		}
-		modifiedExpression.insert(index + 1, 1, k_concatenation);
+		modifiedExpression.insert(index + 1, 1, '.');
 	}
 	return std::move(modifiedExpression);
+}
+
+std::istream& operator>>(std::istream& in, RegularExpression& expression)
+{
+	in >> expression.m_expression;
+	expression.ReduceStars();
+	return in;
+}
+
+std::ostream& operator<<(std::ostream& out, const RegularExpression& expression)
+{
+	out << expression.m_expression;
+	return out;
 }

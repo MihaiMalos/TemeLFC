@@ -15,7 +15,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="DeterministicFiniteAutomaton.h">
+    <ClInclude Include="DFA.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="RegularExpression.h">
@@ -23,7 +23,7 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="DeterministicFiniteAutomaton.cpp">
+    <ClCompile Include="DFA.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="RegularExpression.cpp">
