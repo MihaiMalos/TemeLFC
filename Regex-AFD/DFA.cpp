@@ -12,11 +12,9 @@ DFA::DFA(
 {
 }
 
-bool DFA::VerifyWord(std::string word)
+bool DFA::CheckWord(std::string word)
 {
-	if (word.find(&m_lambda) != std::string::npos && word.size() > 1) return false;
-
-	char currentState = m_startState;
+	int currentState = m_startState;
 
 	for (const char& symbol : word)
 	{

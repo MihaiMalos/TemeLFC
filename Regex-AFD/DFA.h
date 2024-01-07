@@ -17,7 +17,7 @@ public:
 		const std::vector<uint16_t>& finalStates = {}
 		);
 
-	bool VerifyWord(std::string word);
+	bool CheckWord(std::string word);
 	bool checkAutomatonValid() const;
 
 private:
