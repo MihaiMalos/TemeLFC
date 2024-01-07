@@ -61,15 +61,12 @@ bool DFA::checkTransitionsValid() const
 		const auto& [inputState, inputSymbol] = transition.first;
 		const auto& outputState = transition.second;
 
-		//Check if input state in states
 		if (std::ranges::find(m_states, inputState) == m_states.end()) 
 			return false;
 
-		//Check if output state in states
 		if (std::ranges::find(m_states, outputState) == m_states.end()) 
 			return false;
 
-		//Check if input symbol in symbols
 		if (std::ranges::find(m_alphabet, inputSymbol) == m_alphabet.end()) 
 			return false;
 	}

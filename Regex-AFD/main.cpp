@@ -15,14 +15,19 @@ void menu(RegularExpression& regex)
 		std::cout << "Introduceti o optiune: ";
 		std::string option;
 		std::cin >> option;
-		if (option.size() > 1) // this could be done better
+		if (option.size() > 1)
 		{
 			option[0] = 'x';
 		}
 		switch (option[0])
 		{
 		case '1':
+			{
 			std::cout << deterministicAutomaton << "\n\n";
+			std::fstream fout("out.txt");
+			fout << deterministicAutomaton;
+			fout.close();
+			}
 			break;
 		case '2':
 			std::cout << regex << "\n\n";
@@ -32,7 +37,7 @@ void menu(RegularExpression& regex)
 			std::cout << "Introduceti un cuvant: ";
 			std::string word;
 			std::cin >> word;
-			if (deterministicAutomaton.VerifyWord(word))
+			if (deterministicAutomaton.CheckWord(word))
 			{
 				std::cout << "acceptat\n\n";
 			}

@@ -26,7 +26,6 @@ public:
 
 	static NFA FromChar(char c);
 
-	//State generation
 	static uint16_t stateCounter;
 	static uint16_t genState()
 	{

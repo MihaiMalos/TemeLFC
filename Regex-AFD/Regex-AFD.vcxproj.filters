@@ -49,5 +49,6 @@
     <Text Include="regexFile.txt">
       <Filter>Resource Files</Filter>
     </Text>
+    <Text Include="out.txt" />
   </ItemGroup>
 </Project>

@@ -28,7 +28,6 @@ bool RegularExpression::IsValid()
 			if (index == 0 || index == size - 1)
 				return false;
 
-			// we can have ( after | but not )
 			if (GetRank(m_expression[index - 1]) != -1 || 
 				GetRank(m_expression[index + 1]) > 0   ||
 				m_expression[index + 1] == ')' ) 
@@ -42,8 +41,6 @@ bool RegularExpression::IsValid()
 			if (index == 0)
 				return false;
 
-			// we could have concatenation after * but m_expression 
-			// doesn't contain the concatenation operator
 			if (GetRank(m_expression[index - 1]) != -1 ||
 				GetRank(m_expression[index + 1]) > 0)
 			{
@@ -98,7 +95,6 @@ DFA RegularExpression::ConvertToAutomaton()
 				break;
 			}
 			default:
-				// if the Polish notation is correct, as it should be, there is no need for a default case but still
 				break;
 			}
 		}
