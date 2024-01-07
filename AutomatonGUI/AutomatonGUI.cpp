@@ -8,6 +8,7 @@
 #include <QPushButton>
 #include <QFileDialog>
 #include <QThread>
+#include <QPlainTextEdit>
 
 #include "AutomatonGUI.h"
 #include "DFA.h"
@@ -23,7 +24,6 @@ AutomatonGUI::AutomatonGUI(QWidget *parent)
     ui.setupUi(this);
     InitTransitionDialog();
     InitCheckWordDialog();
-    resize(1000, 600);
 }
 
 AutomatonGUI::~AutomatonGUI()
@@ -77,12 +77,6 @@ void AutomatonGUI::mousePressEvent(QMouseEvent* event)
                 m_selectedTransition = "";
             }
         }
-    }
-    else if (event->button() == Qt::MiddleButton && !toSelect.isEmpty())
-    {
-        m_automaton->IsFinalState(toSelect)
-            ? m_automaton->RemoveFinalState(toSelect)
-            : m_automaton->MakeStateFinal(toSelect);
     }
     update();
 }
@@ -174,15 +168,6 @@ void AutomatonGUI::paintEvent(QPaintEvent* event)
             bigCircle.setSize(smallCircle.size() * 1.25f);
             bigCircle.moveCenter(smallCircle.center());
             painter.drawEllipse(bigCircle);
-
-            if (m_automaton->IsStartState(state))
-            {
-                // code to be added
-            }
-        }
-        else if (m_automaton->IsStartState(state))
-        {
-            // code to be added
         }
         painter.drawText(smallCircle, Qt::AlignCenter, state);
     }
@@ -196,10 +181,10 @@ void AutomatonGUI::paintEvent(QPaintEvent* event)
         const auto& firstState = automatonStates.find(transition[0]);
         const auto& secondState = automatonStates.find(transition[transition.size()-1]);
         if (firstState == automatonStates.end() || secondState == automatonStates.end()) continue;
+		const auto& [firstStateName, firstStatePos] = *firstState;
+		const auto& [secondStateName, secondStatePos] = *secondState;
         if (firstState != secondState)
         {
-            const auto& [firstStateName, firstStatePos] = *firstState;
-            const auto& [secondStateName, secondStatePos] = *secondState;
 
             const auto& centerToBorderOffset = PointTranslation(firstStatePos, secondStatePos);
             const auto startPoint = firstStatePos + centerToBorderOffset;
@@ -228,7 +213,16 @@ void AutomatonGUI::paintEvent(QPaintEvent* event)
             path.moveTo(startPoint);
             path.quadTo(controlPoint, endPoint);
             painter.drawPath(path);
-            painter.drawText(textPoint, "Text");
+            QString transitionText = "";
+            if (transition.size() == 3)
+            {
+                transitionText = transition[1];
+            }
+            else if (transition.size() == 5)
+            {
+                transitionText = transition[1] + ", " + transition[2] + " / " + transition[3];
+            }
+            painter.drawText(textPoint, transitionText);
 
 			static const int arrowOffset = 30;
 			double angle = atan(CalculateSlope(controlPoint, secondStatePos)) * 180 / 3.14;
@@ -248,7 +242,47 @@ void AutomatonGUI::paintEvent(QPaintEvent* event)
         }
         else
         {
-            // arrow inside point
+            const auto& upPoint = firstStatePos + QPointF(0, -kCircleRadius);
+            const auto& leftPoint = firstStatePos + QPointF(-kCircleRadius, 0);
+            
+            QPainterPath path;
+            path.moveTo(upPoint);
+            QPointF center = (upPoint + leftPoint) / 2.0;
+			qreal rx = QLineF(center, upPoint).length();
+			qreal ry = rx; // Increase the aspect ratio
+			qreal startAngle = QLineF(center, upPoint).angle();
+			qreal endAngle = QLineF(center, leftPoint).angle();
+            path.arcTo(center.x() - rx, center.y() - ry, 2 * rx, 2 * ry, startAngle, endAngle - startAngle);
+            painter.drawPath(path);
+
+			static const int arrowOffset = 30;
+			double angle =  120;
+			QLineF angleline;
+			angleline.setP1(leftPoint);
+			angleline.setLength(kCircleRadius/2.0f);
+
+			pen.setColor(Qt::darkCyan);
+			painter.setPen(pen);
+			angleline.setAngle(angle + arrowOffset);
+			painter.drawLine(angleline);
+			angleline.setAngle(angle - arrowOffset);
+			painter.drawLine(angleline);
+			pen.setColor(Qt::black);
+			painter.setPen(pen);
+
+			QString transitionText = "";
+			if (transition.size() == 3)
+			{
+				transitionText = transition[1];
+			}
+			else if (transition.size() == 5)
+			{
+				transitionText = transition[1] + "; " + transition[2] + " / " + transition[3];
+			}
+
+            const float textDistanceOffset = 1.5f;
+            QPointF textPoint = firstStatePos - textDistanceOffset * QPoint(kCircleRadius, kCircleRadius);
+			painter.drawText(textPoint, transitionText);
         }
 
     }
@@ -258,56 +292,7 @@ void AutomatonGUI::on_checkWord_clicked()
 {
     m_selectedState = "";
     m_checkWordDialog->exec();
-    CheckWordOutput output;
-    switch (m_automaton->GetAutomatonType())
-    {
-	case AutomatonType::DFA:
-	{
-		std::shared_ptr<DFA> dfa = std::make_shared<DFA>(*m_automaton.get());
-		for (auto transition : dfa->GetTransitions())
-		{
-			dfa->AddTransition(transition[0], transition[1].at(0).toLatin1(), transition[2]);
-		}
-		output = dfa->CheckWord(m_selectedWord);
-		break;
-	}
-	case AutomatonType::NFA:
-    {	
-        std::shared_ptr<NFA> nfa = std::make_shared<NFA>(*m_automaton.get());
-		for (auto transition : nfa->GetTransitions())
-		{
-			nfa->AddTransition(transition[0], transition[1].at(0).toLatin1(), transition[2]);
-		}
-        output = nfa->CheckWord(m_selectedWord);
-		break;
-	}
-	case AutomatonType::LambdaNFA:
-	{
-		std::shared_ptr<LambdaNFA> lambdaNFA = std::make_shared<LambdaNFA>(*m_automaton.get());
-		for (auto transition : lambdaNFA->GetTransitions())
-		{
-			lambdaNFA->AddTransition(transition[0], transition[1].at(0).toLatin1(), transition[2]);
-		}
-        output = lambdaNFA->CheckWord(m_selectedWord);
-		break;
-	}
-	case AutomatonType::PDA:
-	{
-		std::shared_ptr<PDA> pda = std::make_shared<PDA>(*m_automaton.get());
-		for (auto transition : pda->GetTransitions())
-		{
-			pda->AddTransition(transition[0], transition[1].at(0).toLatin1(), transition[2].at(0).toLatin1(), transition[3], transition[4]);
-		}
-        output = pda->CheckWord(m_selectedWord);
-		break;
-	}
-	case AutomatonType::None:
-	{
-        output = { {}, false };
-        qDebug() << "Not a valid automaton type";
-		break;
-	}
-    }
+    CheckWordOutput output = CheckWord(m_selectedWord);
 
     int index = 0;
     for (const auto& states : output.first)
@@ -326,13 +311,14 @@ void AutomatonGUI::on_checkWord_clicked()
 void AutomatonGUI::on_save_clicked()
 {
     QString filePath = QFileDialog::getSaveFileName(nullptr, "Save File", "", "Text Files (*.txt)");
-    m_automaton->SaveAutomaton(filePath);
+    if (!filePath.isNull()) m_automaton->SaveAutomaton(filePath);
 }
 
 void AutomatonGUI::on_load_clicked()
 {
     QString filePath = QFileDialog::getOpenFileName(nullptr, "Load File", "", "Text Files (*.txt)");
-    m_automaton->LoadAutomaton(filePath);
+    if (!filePath.isNull()) m_automaton->LoadAutomaton(filePath);
+
 }
 
 void AutomatonGUI::on_clear_clicked()
@@ -346,6 +332,23 @@ void AutomatonGUI::on_clear_clicked()
 void AutomatonGUI::on_loadWords_clicked()
 {
     QString filePath = QFileDialog::getOpenFileName(nullptr, "Load File", "", "Text Files (*.txt)");
+	if (filePath.isNull()) return;
+	QPlainTextEdit* textBox = new QPlainTextEdit();
+	textBox->setReadOnly(true);
+
+	QFile file(filePath);
+	file.open(QIODevice::ReadOnly | QIODevice::Text);
+	QTextStream in(&file);
+	while (!in.atEnd())
+	{
+		QString line = in.readLine();
+		auto output = CheckWord(line);
+		QColor color = output.second ? Qt::darkGreen : Qt::red;
+		line = QString("<font color='%1'>%2</font>").arg(color.name()).arg(line);
+		textBox->appendHtml(line);
+	}
+	file.close();
+	textBox->show();
 }
 
 QString AutomatonGUI::GetCurrentStateNotation()
@@ -403,4 +406,59 @@ void AutomatonGUI::InitCheckWordDialog()
 		lineEdit->setText("");
 		m_checkWordDialog->close();
 		});
+}
+
+CheckWordOutput AutomatonGUI::CheckWord(const QString& word)
+{
+	CheckWordOutput output;
+	switch (m_automaton->GetAutomatonType())
+	{
+	case AutomatonType::DFA:
+	{
+		std::shared_ptr<DFA> dfa = std::make_shared<DFA>(*m_automaton.get());
+		for (auto transition : dfa->GetTransitions())
+		{
+			dfa->AddTransition(transition[0], transition[1].at(0).toLatin1(), transition[2]);
+		}
+		output = dfa->CheckWord(word);
+		break;
+	}
+	case AutomatonType::NFA:
+	{
+		std::shared_ptr<NFA> nfa = std::make_shared<NFA>(*m_automaton.get());
+		for (auto transition : nfa->GetTransitions())
+		{
+			nfa->AddTransition(transition[0], transition[1].at(0).toLatin1(), transition[2]);
+		}
+		output = nfa->CheckWord(word);
+		break;
+	}
+	case AutomatonType::LambdaNFA:
+	{
+		std::shared_ptr<LambdaNFA> lambdaNFA = std::make_shared<LambdaNFA>(*m_automaton.get());
+		for (auto transition : lambdaNFA->GetTransitions())
+		{
+			lambdaNFA->AddTransition(transition[0], transition[1].at(0).toLatin1(), transition[2]);
+		}
+		output = lambdaNFA->CheckWord(word);
+		break;
+	}
+	case AutomatonType::PDA:
+	{
+		std::shared_ptr<PDA> pda = std::make_shared<PDA>(*m_automaton.get());
+		for (auto transition : pda->GetTransitions())
+		{
+			pda->AddTransition(transition[0], transition[1].at(0).toLatin1(), transition[2].at(0).toLatin1(), transition[3], transition[4]);
+		}
+		output = pda->CheckWord(word);
+		break;
+	}
+	case AutomatonType::None:
+	{
+		output = { {}, false };
+		qDebug() << "Not a valid automaton type";
+		break;
+	}
+	}
+	return output;
 }

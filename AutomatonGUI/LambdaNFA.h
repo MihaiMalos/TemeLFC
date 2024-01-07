@@ -8,5 +8,8 @@ public:
 	LambdaNFA(const Automaton& automaton);
 
 	CheckWordOutput CheckWord(const QString& word) const override;
+
+private:
+	void LamdaExtend(std::set<QString>& states) const;
 };
 

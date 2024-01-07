@@ -14,7 +14,10 @@ public:
 
 	void AddTransition(QString& inputState, char symbol, char stackHead, QString& headReplacement, QString& outputState);
 	CheckWordOutput CheckWord(const QString& word);
+
 private:
+	void LamdaExtend(std::vector<QString>& states, std::vector<std::stack<char>>& stack);
+
 	PDATransitions m_transitions;
 	const char m_startStack = '$';
 };

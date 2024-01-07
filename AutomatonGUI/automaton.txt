@@ -1,7 +1,0 @@
-States:
-q0 419 274 S F 
-q1 585 305 
-Transitions:
-q0 a q1 
-q1 - q1 
-q1 b q0 

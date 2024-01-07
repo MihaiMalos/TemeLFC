@@ -32,6 +32,7 @@ private:
 	double CalculateSlope(QPointF firstPoint, QPointF secondPoint);
     void InitTransitionDialog();
     void InitCheckWordDialog();
+    CheckWordOutput CheckWord(const QString& word);
 
 private:
     const int kCircleRadius = 20;

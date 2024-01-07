@@ -81,7 +81,10 @@
     </QtMoc>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="automaton.txt">
+    <Text Include="pda_example.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="words_example.txt">
       <Filter>Resource Files</Filter>
     </Text>
   </ItemGroup>

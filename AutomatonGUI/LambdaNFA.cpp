@@ -10,6 +10,7 @@ CheckWordOutput LambdaNFA::CheckWord(const QString& word) const
 	std::vector<std::vector<QString>> checkWordOutput;
 	std::set<QString> currentStateSet;
 	currentStateSet.insert(m_startState);
+	LamdaExtend(currentStateSet);
 
 	for (const auto& symbol : word)
 	{
@@ -24,17 +25,9 @@ CheckWordOutput LambdaNFA::CheckWord(const QString& word) const
 				for (auto& outputState : stateRange->second)
 				{
 					nextStateSet.insert(outputState);
-
-					auto lambdaStateRange = m_transitions.find({ outputState, m_lambda });
-					if (lambdaStateRange != m_transitions.end())
-					{
-						for (auto& lambdaState : lambdaStateRange->second)
-						{
-							nextStateSet.insert(lambdaState);
-						}
-					}
 				}
 			}
+			LamdaExtend(nextStateSet);
 		}
 
 		std::vector<QString> currentStateVector;
@@ -50,4 +43,26 @@ CheckWordOutput LambdaNFA::CheckWord(const QString& word) const
 			return {checkWordOutput, true};
 	}
 	return { checkWordOutput, false };
+}
+
+void LambdaNFA::LamdaExtend(std::set<QString>& states) const
+{
+	while (true)
+	{
+		std::set<QString> newStates = states;
+		for (auto state : states)
+		{
+			auto lambdaStateRange = m_transitions.find({ state, m_lambda });
+			if (lambdaStateRange != m_transitions.end())
+			{
+				for (auto& lambdaState : lambdaStateRange->second)
+				{
+					newStates.insert(lambdaState);
+				}
+			}
+		}
+		if (newStates == states) return;
+
+		states = newStates;
+	}
 }

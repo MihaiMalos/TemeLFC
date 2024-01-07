@@ -19,6 +19,7 @@ CheckWordOutput PDA::CheckWord(const QString& word)
 	std::stack<char> startStack;
 	startStack.push(m_startStack);
 	currentStackList.push_back(startStack);
+	LamdaExtend(currentStateList, currentStackList);
 
 	for (const auto& symbol : word)
 	{
@@ -48,27 +49,9 @@ CheckWordOutput PDA::CheckWord(const QString& word)
 
 					nextStateList.push_back(outputState.second);
 					nextStackList.push_back(newStack);
-
-					auto lambdaStateRange = m_transitions.find({ outputState.second, m_lambda, newStack.top() });
-					if (lambdaStateRange != m_transitions.end())
-					{
-						for (auto& lambdaState : lambdaStateRange->second)
-						{
-							auto lambdaNewStack = newStack;
-							lambdaNewStack.pop();
-							if (lambdaState.first != m_lambda)
-							{
-								for (auto it = lambdaState.first.rbegin(); it != lambdaState.first.rend(); ++it)
-								{
-									lambdaNewStack.push(it->toLatin1());
-								}
-							}
-							nextStateList.push_back(lambdaState.second);
-							nextStackList.push_back(lambdaNewStack);
-						}
-					}
 				}
 			}
+			LamdaExtend(nextStateList, nextStackList);
 		}
 
 		checkWordOutput.push_back(currentStateList);
@@ -90,4 +73,42 @@ CheckWordOutput PDA::CheckWord(const QString& word)
 		}
 	}
 	return { checkWordOutput, false };
+}
+
+void PDA::LamdaExtend(std::vector<QString>& states, std::vector<std::stack<char>>& stack)
+{
+	while (true)
+	{
+		auto& newStates = states;
+		auto& newStack = stack;
+
+		for (int index = 0; index < states.size(); index++)
+		{
+			auto& currentState = newStates[index];
+			auto& currentStack = newStack[index];
+
+			auto lambdaStateRange = m_transitions.find({ currentState, m_lambda, currentStack.top() });
+			if (lambdaStateRange != m_transitions.end())
+			{
+				for (auto& lambdaState : lambdaStateRange->second)
+				{
+					auto lambdaNewStack = currentStack;
+					lambdaNewStack.pop();
+					if (lambdaState.first != m_lambda)
+					{
+						for (auto it = lambdaState.first.rbegin(); it != lambdaState.first.rend(); ++it)
+						{
+							lambdaNewStack.push(it->toLatin1());
+						}
+					}
+					states.push_back(lambdaState.second);
+					stack.push_back(lambdaNewStack);
+				}
+			}
+		}
+
+		if (newStates == states) return;
+
+		states = newStates;
+	}
 }
