@@ -58,7 +58,7 @@ bool RegularExpression::IsValid()
 	return true;
 }
 
-NFA RegularExpression::ConvertToAutomaton()
+DFA RegularExpression::ConvertToAutomaton()
 {
 	std::string polishNotation = BuildPolishForm();
 	std::stack<NFA> automata;
@@ -103,9 +103,9 @@ NFA RegularExpression::ConvertToAutomaton()
 			}
 		}
 	}
-	return std::move(automata.top());
+	return automata.top().TransformInDFA();
 }
-const uint8_t& RegularExpression::GetRank(const char& op) const
+	int RegularExpression::GetRank(const char& op) const
 {
 	switch (op)
 	{

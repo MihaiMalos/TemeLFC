@@ -11,8 +11,8 @@ public:
 	~RegularExpression() = default;
 
 	bool IsValid();
-	NFA ConvertToAutomaton();
-	const uint8_t& GetRank(const char& op) const;
+	DFA ConvertToAutomaton();
+	int GetRank(const char& op) const;
 	
 	void ReduceStars();
 	std::string AddConcatenation(const std::string& expression) const;

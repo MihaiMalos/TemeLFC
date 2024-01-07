@@ -1,5 +1,17 @@
 #include "DFA.h"
 
+DFA::DFA(
+	const std::vector<uint16_t>& states, 
+	const std::vector<char>& alphabet,
+	const TransitionsDFA& transitions,
+	int startState, 
+	const std::vector<uint16_t>& finalStates
+		) :
+	Automaton(states, alphabet, startState, finalStates),
+	m_transitions{ transitions }
+{
+}
+
 bool DFA::VerifyWord(std::string word)
 {
 	if (word.find(&m_lambda) != std::string::npos && word.size() > 1) return false;
@@ -16,14 +28,57 @@ bool DFA::VerifyWord(std::string word)
 		else return false;
 	}
 
-	for (const auto& finalState : m_finalStates)
-	{
-		if (currentState == finalState)
-			return true;
-	}
+	if (std::ranges::find(m_finalStates, currentState) == m_finalStates.end())
+		return false;
 
+	return true;
+}
+
+bool DFA::checkAutomatonValid() const
+{
+	return checkInputStateInStates() && checkFinalStatesInStates() && checkTransitionsValid();
+}
+
+bool DFA::checkInputStateInStates() const
+{
+	if (std::ranges::find(m_states, m_startState) != m_states.end()) 
+		return true;
 	return false;
 }
+
+bool DFA::checkFinalStatesInStates() const
+{
+	for (const auto& element : m_finalStates)
+	{
+		if (std::ranges::find(m_states, element) == m_states.end()) 
+			return false;
+	}
+	return true;
+}
+
+bool DFA::checkTransitionsValid() const
+{
+	for (const auto& transition : m_transitions)
+	{
+		const auto& [inputState, inputSymbol] = transition.first;
+		const auto& outputState = transition.second;
+
+		//Check if input state in states
+		if (std::ranges::find(m_states, inputState) == m_states.end()) 
+			return false;
+
+		//Check if output state in states
+		if (std::ranges::find(m_states, outputState) == m_states.end()) 
+			return false;
+
+		//Check if input symbol in symbols
+		if (std::ranges::find(m_alphabet, inputSymbol) == m_alphabet.end()) 
+			return false;
+	}
+
+	return true;
+}
+
 
 
 

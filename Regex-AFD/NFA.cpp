@@ -116,9 +116,131 @@ NFA NFA::op_kleene()
 	return *this;
 }
 
-NFA NFA::FromChar(char c)
+NFA NFA::FromChar(char character)
 {
 	uint16_t startState = genState();
 	uint16_t finalState = genState();
-	return { {startState, finalState}, {c}, { {{startState, c}, {finalState}} }, startState, { finalState } };
+	return { {startState, finalState}, {character}, { {{startState, character}, {finalState}} }, startState, { finalState } };
+}
+
+DFA NFA::TransformInDFA() const
+{
+	std::vector<std::unordered_set<uint16_t>> newStates;
+	TransitionsDFA  newTransitions;
+	std::queue<uint16_t> queue;
+
+	//Add new start element to queue and newStates (always is node with index 1) 
+	{
+		std::unordered_set<uint16_t> newStartState{ m_startState };
+		lambdaExtend(newStartState);
+		newStates.push_back(newStartState);
+		queue.push(0);
+	}
+
+	//While there are elements in queue
+	while (!queue.empty())
+	{
+		//Get current element
+		uint16_t newIndex = queue.front();
+		const std::unordered_set<uint16_t> currentState = newStates[newIndex];
+		queue.pop();
+
+		//See where it goes with every symbol
+		for (char symbol : m_alphabet)
+		{
+			//Create new state, add all AFN states in which we end up from currentState
+			std::unordered_set<uint16_t> newState;
+			for (const auto& oldState : currentState) {
+				try {
+					for (const auto& element : m_transitions.at({ oldState, symbol }))
+						newState.insert(element);
+				}
+				catch (...) {}
+			}
+
+			//Ignore newState if it's empty
+			if (newState.empty())
+				continue;
+
+			//Also add all old states that are lambda connected
+			lambdaExtend(newState);
+
+			//Search the newly generated state in AFD states, check if it exists
+			bool alreadyExisting{ false };
+			for (uint16_t i{0}; i < newStates.size(); ++i)
+			{
+				if (newStates[i] == newState)
+				{
+					//If it does, add new transition
+					newTransitions[{ newIndex + 1, symbol }] =  i + 1;
+					alreadyExisting = true;
+					break;
+				}
+			}
+
+			//If it doesn't, generate state, add it to queue and then add transition
+			if (!alreadyExisting)
+			{
+				newStates.push_back(newState);
+				newTransitions[{ newIndex + 1, symbol }] = newStates.size();
+				queue.push(newStates.size() - 1);
+			}
+		}
+	}
+
+	//Rename all new states, they should be numbers
+	std::vector<uint16_t> dfaStates;
+	for (uint16_t i = 1; i <= newStates.size(); i++)
+		dfaStates.push_back(i);
+
+	//Find what new states should be final states
+	std::vector<uint16_t> dfaFinalStates;
+	for (uint16_t i = 0; i < newStates.size(); i++)
+	{
+		//If a new AFD state contains an old AFN state that is final, then AFD state should be final
+		bool newStateIsFinalState{ false };
+		for (auto element : newStates[i])
+		{
+			if (std::find(m_finalStates.begin(), m_finalStates.end(), element) != m_finalStates.end())
+			{
+				newStateIsFinalState = true;
+				break;
+			}
+		}
+
+		if (newStateIsFinalState)
+			dfaFinalStates.push_back(i + 1);
+	}
+
+	return DFA{
+		dfaStates,
+		m_alphabet,
+		newTransitions,
+		1,
+		dfaFinalStates
+	};
+}
+
+void NFA::lambdaExtend(std::unordered_set<uint16_t>& us) const
+{
+	while (true)
+	{
+		std::unordered_set<uint16_t> newUs{ us };
+		for (const auto& element : us)
+		{
+			//Find all lambda transitions for each AFN state and add them to AFD state, if it exists
+			try {
+				for (const auto& lambda : m_transitions.at({ element, m_lambda }))
+					newUs.insert(lambda);
+			}
+			catch (...) {}
+		}
+
+		//If there haven't been any modifications stop
+		if (us == newUs)
+			return;
+
+		//Else keep going
+		us = newUs;
+	}
 }
